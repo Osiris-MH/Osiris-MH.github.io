@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acerca de mi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top left, #111 30%, #000 100%);
+      color: white;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4rem;
+      height: 100vh;
+      padding: 2rem;
+    }
+
+    .text {
+      max-width: 500px;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+    }
+
+    h1 span {
+      background: linear-gradient(90deg, #007cf0, #00dfd8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      background: linear-gradient(90deg, #007cf0, #00dfd8);
+       background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0.5rem 0 1rem 0;
+    }
+
+    p {
+      font-family: 'Merriweather', serif;
+      color: #fff;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .socials {
+      margin-top: 1rem;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .socials i {
+      font-size: 1.2rem;
+      color: #ffae00;
+      transition: 0.3s;
+    }
+
+    .socials i:hover {
+      color: #fff;
+    }
+
+    .photo {
+      position: relative;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      overflow: hidden;
+      box-shadow: 0 0 60px 10px #00dfd8;
+      animation: glow 3s ease-in-out infinite alternate;
+    }
+
+    .photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    @keyframes glow {
+      from {
+        box-shadow: 0 0 40px 5px #007cf0;
+      }
+      to {
+        box-shadow: 0 0 80px 20px #00dfd8;
+      }
+    }
+
+    .photo2 {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 60px 10px #df0052;
+  animation: glows 3s ease-in-out infinite alternate;
+  margin: 20px; /* Para separar un poco */
+}
+
+.photo2 img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* La versión más pequeña */
+.photo2 {
+  width: 200px; /* La mitad */
+  height: 200px;
+  margin-left: 1250px; /* Para moverlo al lado */
+  margin-top: -230px; /* Para bajarlo un poco */
+}
+
+@keyframes glows {
+  from {
+    box-shadow: 0 0 40px 5px #f00014;
+  }
+  to {
+    box-shadow: 0 0 80px 20px #df0052;
+  }
+}
+
+.photo3 {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 60px 10px #dd2de3;
+  animation: glowse 3s ease-in-out infinite alternate;
+  margin: 20px; /* Para separar un poco */
+}
+
+.photo3 img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* La versión más pequeña */
+.photo3 {
+  width: 160px; /* La mitad */
+  height: 160px;
+  margin-left: 1307px; /* Para moverlo al lado */
+  margin-top: -530px; /* Para bajarlo un poco */
+}
+
+@keyframes glowse {
+  from {
+    box-shadow: 0 0 40px 5px #cc00f0;
+  }
+  to {
+    box-shadow: 0 0 80px 20px #dd2de3;
+  }
+}
+
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+  </style>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <canvas id="trail"></canvas>
+  <div class="container">
+    <div class="text">
+      <h1>Hola, soy <span>Osiris Martinez Hernandez</span></h1>
+      <h2>Hacker etico y experto en Ciberseguridad</h2>
+      <p>Mi pasión es proteger los sistemas, datos e infraestructuras digitales contra amenazas cada vez más sofisticadas. Como hacker ético y experto en ciberseguridad, me especializo en identificar y solucionar vulnerabilidades mediante pruebas de penetración, auditorías de seguridad, y la implementación de medidas preventivas que refuercen la seguridad de las organizaciones.</p>
+      <p>Con un enfoque proactivo y un profundo conocimiento técnico, trabajo para anticipar riesgos y mitigar ataques antes de que ocurran, asegurando la protección continua de las organizaciones y su futuro digital.</p>
+    </div>
+    <div class="photo">
+      <img src="imagenes/mr.webp"/>
+    </div>
+  </div>
+  <div class="photo2">
+    <img src="imagenes/mr2.jpg"/>
+  </div>
+  <div class="photo3">
+    <img src="imagenes/mr3.jpeg"/>
+  </div>
+</div>
+
+  <script>
+    const canvas = document.getElementById("trail");
+    const ctx = canvas.getContext("2d");
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+    const particles = [];
+
+    window.addEventListener("resize", () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    document.addEventListener("mousemove", e => {
+      for (let i = 0; i < 5; i++) {
+        particles.push({
+          x: e.clientX,
+          y: e.clientY,
+          alpha: 1,
+          radius: Math.random() * 4 + 1,
+          dx: (Math.random() - 0.5) * 3,
+          dy: (Math.random() - 0.5) * 3,
+          color: `hsl(${Math.random() * 20 + 200}, 100%, 70%)`
+        });
+      }
+    });
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.alpha;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        p.x += p.dx;
+        p.y += p.dy;
+        p.alpha -= 0.02;
+
+        if (p.alpha <= 0) {
+          particles.splice(i, 1);
+          i--;
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ethical Hacking Case Studies</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <header>
+    <div class="blob-container">
+      <div class="blob blob1"></div>
+      <div class="blob blob2"></div>
+      <div class="blob blob3"></div>
+      <div class="blob blob4"></div>
+    </div>
+    
+    <!-- MENÚ DE NAVEGACIÓN -->
+    <nav class="navbar">
+      <a href="Botones/about.html">Acerca de mí</a>
+      <a href="Botones/certificaciones.html">Certificaciones</a>
+      <a href="Scripts-Github/mis-scripts.html">Mis Scripts</a>
+      <a href="Botones/contacto.html">Contacto</a>
+    </nav>
+
+    <h1>Ethical Hacking Case Studies</h1>
+    <p>Mis walkthroughs de ciberseguridad y hacking ético</p>
+  </header>
+  
+  <main>
+    <section class="walkthroughs">
+      <!-- 16 Tarjetas de máquinas (incluyendo las 8 nuevas) -->
+      <article class="card">
+        <h2>Machine: Mr.Robot CTF</h2>
+        <p>Dificultad:<button class="diff-btn-media">Media</button><button class="btn-OS">Linux</button></p>
+        <p>Tecnicas:<button class="tech-btn">WordPress</button><button class="tech-btn">Shell inversa</button><button class="tech-btn">Fuerza bruta</button>
+        <button class="tech-btn">Explotación de SUID</button></p>
+        <a href="walkthroughs/mrrobot.html" target="_blank">Ver walkthrough</a>
+      </article>
+
+      <article class="card">
+        <h2>Machine: Crocc Crew</h2>
+        <p>Dificultad:<button class="diff-btn-loco">Loco</button><button class="btn-OS">Windows</button></p>
+        <p>Tecnicas:<button class="tech-btn">Evil-WinRM</button><button class="tech-btn">Kerberoasting</button><button class="tech-btn">Constrained Delegation</button>
+        <button class="tech-btn">Impacket</button></p>
+        <a href="walkthroughs/Crocc-Crew.html" target="_blank">Ver walkthrough</a>
+      </article>
+
+      <article class="card">
+        <h2>Machine: Bounty Hacker</h2>
+        <p>Dificultad:<button class="diff-btn-facil">Facil</button><button class="btn-OS">Linux</button></p>
+        <p>Tecnicas:<button class="tech-btn">Fuerza bruta</button><button class="tech-btn">Enumeración de servicio</button><button class="tech-btn">Explotación de Binarios Sudo</button>
+        <button class="tech-btn">Acceso Anónimo FTP</button></p>
+        <a href="walkthroughs/Bounty-Hacker.html" target="_blank">Ver walkthrough</a>
+      </article>
+
+      <article class="card">
+        <h2>Machine: Anonymous Playground</h2>
+        <p>Dificultad:<button class="diff-btn-duro">Duro</button><button class="btn-OS">Linux</button></p>
+        <p>Tecnicas:<button class="tech-btn">Enumeración Web</button><button class="tech-btn">Ingeniería inversa</button><button class="tech-btn">Manipulación de cookies</button>
+        <button class="tech-btn">Buffer Overflow</button></p>
+        <a href="walkthroughs/AnonymousPlayground.html" target="_blank">Ver walkthrough</a>
+      </article>
+
+      <article class="card">
+        <h2>Machine: Road</h2>
+        <p>Dificultad:<button class="diff-btn-media">Media</button><button class="btn-OS">Linux</button></p>
+        <p>Tecnicas:<button class="tech-btn">Enumeración Web</button><button class="tech-btn">Explotación de LD_PRELOAD</button><button class="tech-btn">Enumeración de tareas programadas</button>
+        <button class="tech-btn">shell inversa</button></p>
+        <a href="walkthroughs/Road.html" target="_blank">Ver walkthrough</a>
+      </article>
+
+      <article class="card">
+        <h2>Machine: CMesS</h2>
+        <p>Dificultad:<button class="diff-btn-media">Media</button><button class="btn-OS">Linux</button></p>
+        <p>Tecnicas:<button class="tech-btn">Enumeración de Subdominios</button><button class="tech-btn">Enumeración de Directorios Web</button><button class="tech-btn">Privilegios mediante Cronjob</button>
+        <button class="tech-btn">Shell inversa</button></p>
+        <a href="walkthroughs/CMesS.html" target="_blank">Ver walkthrough</a>
+      </article>
+
+      <article class="card">
+        <h2>Machine: Internal</h2>
+        <p>Dificultad:<button class="diff-btn-duro">Duro</button><button class="btn-OS">Linux</button></p>
+        <p>Tecnicas:<button class="tech-btn">Jenkins</button><button class="tech-btn">Enumeración local</button><button class="tech-btn">shell inversa</button>
+        <button class="tech-btn">Fuerza bruta</button></p>
+        <a href="walkthroughs/internal.html" target="_blank">Ver walkthrough</a>
+      </article>
+
+      <article class="card">
+        <h2>Machine: Attacktive Directory</h2>
+        <p>Dificultad:<button class="diff-btn-media">Media</button><button class="btn-OS">Windows</button></p>
+        <p>Tecnicas:<button class="tech-btn">Kerbrute</button><button class="tech-btn">SecretsDump</button><button class="tech-btn">Pass-the-Hash</button>
+        <button class="tech-btn">Netexec</button></p>
+        <a href="walkthroughs/AttacktiveDirectory.html" target="_blank">Ver walkthrough</a>
+      </article>
+
+      <!-- Nuevas máquinas
+      <article class="card">
+        <h2>Machine: Simple CTF</h2>
+        <p>Dificultad:<button class="diff-btn-facil">Facil</button><button class="btn-OS">Linux</button></p>
+        <p>Tecnicas:<button class="tech-btn">WordPress</button><button class="tech-btn">Nmap</button><button class="tech-btn">Fuerza bruta</button>
+        <button class="tech-btn">Explotación sudo..</button></p>
+        <a href="walkthroughs/simplectf.html" target="_blank">Ver walkthrough</a>
+      </article>
+
+      <article class="card">
+        <h2>Machine: GamingServer</h2>
+        <p>Dificultad:<button class="diff-btn-facil">Facil</button><button class="btn-OS">Linux</button></p>
+        <p>Tecnicas:<button class="tech-btn">WordPress</button><button class="tech-btn">Nmap</button><button class="tech-btn">Fuerza bruta</button>
+        <button class="tech-btn">Explotación sudo..</button></p>
+        <a href="walkthroughs/GamingServer.html" target="_blank">Ver walkthrough</a>
+      </article>
+
+      <article class="card">
+        <h2>Machine: Kenobi</h2>
+        <p>Dificultad:<button class="diff-btn-facil">Facil</button><button class="btn-OS">Linux</button></p>
+        <p>Tecnicas:<button class="tech-btn">WordPress</button><button class="tech-btn">Nmap</button><button class="tech-btn">Fuerza bruta</button>
+        <button class="tech-btn">Explotación sudo..</button></p>
+        <a href="walkthroughs/Kenobi.html" target="_blank">Ver walkthrough</a>
+      </article>
+
+      <article class="card">
+        <h2>Machine: Boiler CTF</h2>
+        <p>Dificultad:<button class="diff-btn-media">Media</button><button class="btn-OS">Linux</button></p>
+        <p>Tecnicas:<button class="tech-btn">WordPress</button><button class="tech-btn">Nmap</button><button class="tech-btn">Fuerza bruta</button>
+        <button class="tech-btn">Explotación sudo..</button></p>
+        <a href="walkthroughs/Boiler.html" target="_blank">Ver walkthrough</a>
+      </article>
+
+      <article class="card">
+        <h2>Machine: Biteme</h2>
+        <p>Dificultad:<button class="diff-btn-media">Media</button><button class="btn-OS">Linux</button></p>
+        <p>Tecnicas:<button class="tech-btn">WordPress</button><button class="tech-btn">Nmap</button><button class="tech-btn">Fuerza bruta</button>
+        <button class="tech-btn">Explotación sudo..</button></p>
+        <a href="walkthroughs/Biteme.html" target="_blank">Ver walkthrough</a>
+      </article>
+
+      <article class="card">
+        <h2>Machine: Anonymous</h2>
+        <p>Dificultad:<button class="diff-btn-media">Media</button><button class="btn-OS">Linux</button></p>
+        <p>Tecnicas:<button class="tech-btn">WordPress</button><button class="tech-btn">Nmap</button><button class="tech-btn">Fuerza bruta</button>
+        <button class="tech-btn">Explotación sudo..</button></p>
+        <a href="walkthroughs/Anonymous.html" target="_blank">Ver walkthrough</a>
+      </article>
+
+      <article class="card">
+        <h2>Machine: Blue</h2>
+        <p>Dificultad:<button class="diff-btn-facil">Facil</button><button class="btn-OS">Windows</button></p>
+        <p>Tecnicas:<button class="tech-btn">WordPress</button><button class="tech-btn">Nmap</button><button class="tech-btn">Fuerza bruta</button>
+        <button class="tech-btn">Explotación sudo..</button></p>
+        <a href="walkthroughs/Blue.html" target="_blank">Ver walkthrough</a>
+      </article>
+
+      <article class="card">
+        <h2>Machine: Buffer Overflow Prep</h2>
+        <p>Dificultad:<button class="diff-btn-facil">Facil</button><button class="btn-OS">Windows</button></p>
+        <p>Tecnicas:<button class="tech-btn">WordPress</button><button class="tech-btn">Nmap</button><button class="tech-btn">Fuerza bruta</button>
+        <button class="tech-btn">Explotación sudo..</button></p>
+        <a href="walkthroughs/Buffer-OP-Prep.html" target="_blank">Ver walkthrough</a>
+      </article>
+    </section> -->
+
+    <!-- Contenedor de los botones izquierdo y derecho -->
+    <!--<div class="center-button-container">
+      <button class="glow-red-button" id="prev-btn">
+        <i class="fa-regular fa-circle-left"></i>
+      </button>
+      <button class="glow-red-button" id="next-btn">
+        <i class="fa-regular fa-circle-right"></i>
+      </button>
+    </div>-->
+  </main>
+  
+  <footer>
+    <div class="footer-icons">
+      <button class="icon-button burp"></button>
+      <button class="icon-button kali"></button>
+      <button class="icon-button john"></button>
+      <button class="icon-button linux"></button>
+      <button class="icon-button meta"></button>
+      <button class="icon-button py"></button>
+      <button class="icon-button parrot"></button>
+    </div>
+    
+    <iframe src="https://tryhackme.com/api/v2/badges/public-profile?userPublicId=1222556" class="tryhackme-iframe"></iframe>
+    <div class="footer-right">
+      <h3><i>“La ética en la piratería es el arte de usar tus habilidades para construir un mundo digital más seguro; cada línea de código puede ser una defensa contra las amenazas invisibles.”</i></h3>
+    </div>
+  </footer>
+
+  <script src="scripts.js"></script> <!-- Añadir archivo JS -->
+</body>
+</html>
