@@ -29,6 +29,7 @@
       gap: 4rem;
       height: 100vh;
       padding: 2rem;
+      flex-wrap: wrap;
     }
 
     .text {
@@ -185,6 +186,74 @@
       pointer-events: none;
       z-index: 1;
     }
+
+
+    @media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1rem;
+    text-align: center;
+    height: auto;
+  }
+
+  .photo, .photo2, .photo3 {
+    margin: 0 auto;
+  }
+
+  .photo2, .photo3 {
+    margin-top: 1rem;
+    margin-left: auto;
+  }
+
+  .photo2 {
+    width: 160px;
+    height: 160px;
+  }
+
+  .photo3 {
+    width: 140px;
+    height: 140px;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+
+  p {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.6rem;
+  }
+
+  h2 {
+    font-size: 1rem;
+  }
+
+  .photo {
+    width: 220px;
+    height: 220px;
+  }
+
+  .photo2 {
+    width: 140px;
+    height: 140px;
+  }
+
+  .photo3 {
+    width: 120px;
+    height: 120px;
+  }
+}
+
 
 
   </style>
