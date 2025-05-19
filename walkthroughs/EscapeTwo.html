@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Walkthrough MR.Robot CTF</title>
+  <title>Walkthrough EscapeTwo</title>
   <style>
     body {
       background-color: #0d1117;
@@ -406,7 +406,7 @@ Host script results:
 <p>Además, se identificó un certificado SSL asociado a DC01.sequel.htb, lo cual confirma la pertenencia del sistema al dominio sequel.htb. La presencia de este certificado refuerza la idea de que es una máquina crítica en la infraestructura de red.</p>
 
 <pre>
-  <img src="1-host.png">
+  <img src="IMG/1-host.png">
 </pre>
 
 <h2 id="web">🌐 Enumeración de recursos SMB con credenciales válidas</h2>
@@ -687,7 +687,7 @@ INFO: Done in 00M 24S
 <p>Este conjunto de datos servirá como insumo para visualizar relaciones de privilegios en BloodHound, lo que permitirá identificar posibles caminos de escalada de privilegios o rutas hacia la obtención de control sobre el dominio.</p>
 
 <pre>
-<img src="blood.png">
+<img src="IMG/blood.png">
 </pre>
 
 <p>Parece que Ryan tiene permiso para el usuario de la autoridad de certificación (ca_svc). Esto significa que Ryan puede modificar o tomar posesión de la cuenta ca_svc. Podríamos explotar esto y aumentar los privilegios.</p>
