@@ -134,13 +134,13 @@ Starting gobuster in directory enumeration mode
 </pre>
 <p>El escaneo reveló varias rutas interesantes podemos encontrar que 2 puertos están escuchando, vamos a revisar 10.10.11.62:5000.:</p>
 <pre>
-  <img src="code1.png">
+  <img src="IMG/code1.png">
 </pre>
 <p>Al acceder a la aplicación web en el puerto 5000, se presenta un entorno interactivo de ejecución de código Python en tiempo real. El entorno permite escribir código en un editor del lado izquierdo, y al hacer clic en el botón "Run", los resultados se imprimen en el área derecha.</p>
 <p>⚠️ Esto representa una superficie de ataque crítica, ya que si el servidor no implementa un entorno seguro y aislado (sandboxing) para ejecutar el código, podría ser vulnerable a Remote Code Execution (RCE).</p>
 
 <pre>
-  <img src="code2.png">
+  <img src="IMG/code2.png">
 </pre>
 <p>Mediante la ejecución del siguiente código en el entorno de ejecución vulnerable:</p>
 <pre>print([(user.id, user.username, user.password) for user in User.query.all()])</pre>
