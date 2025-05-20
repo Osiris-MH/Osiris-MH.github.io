@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Walkthrough MR.Robot CTF</title>
+  <title>Walkthrough Code</title>
   <style>
     body {
       background-color: #0d1117;
@@ -60,7 +60,7 @@
 </head>
 <body>
 
-  <h1>TryHackMe >> Mr.Robot CTF</h1>
+  <h1>Hackthebox >> Code</h1>
 
   <div class="table-of-contents">
     <h2>▶ Tabla de Contenidos</h2>
@@ -68,30 +68,17 @@
       <li><a href="#info">🔍 Información de la máquina</a></li>
       <li><a href="#nmap">🔎 Escaneo con Nmap</a></li>
       <li><a href="#web">🌐 Enumeración Web</a></li>
-      <li><a href="#wp">🔧 Explotación WordPress</a></li>
-      <li><a href="#bruteforce">🧰 Ataques de fuerza bruta</a></li>
-      <li><a href="#shell">💻 Reverse Shell en PHP</a></li>
+      <li><a href="#wp">🔓 Cracking de hashes de contraseñas</a></li>
       <li><a href="#hashes">👤 Acceso como usuario</a></li>
-      <li><a href="#user">🔐 Cracking de credenciales</a></li>
-      <li><a href="#privesc">🚀 Escalada de privilegios</a></li>
+      <li><a href="#user">🌚 Obtencion de la bandera usuario</a></li>
+      <li><a href="#privesc">👹 Escalada de privilegios</a></li>
     </ul>
   </div>
 
   <h2 id="info">🔍 Información de la máquina</h2>
-  <p>
-    La máquina <strong>Mr. Robot</strong> de TryHackMe está basada en la popular serie de televisión y simula un entorno realista con un sistema vulnerable al estilo CTF. El reto está clasificado como de dificultad media y está enfocado en tres fases principales:
-  </p>
-  <ul>
-    <li>🔍 <strong>Exploración:</strong> Descubrimiento de servicios, puertos abiertos y análisis del sitio web principal.</li>
-    <li>🕵️‍♂️ <strong>Enumeración:</strong> Inspección a fondo del servidor web, uso de wordlists para encontrar archivos ocultos y recolección de credenciales.</li>
-    <li>🚀 <strong>Escalada de privilegios:</strong> Tras obtener acceso inicial al sistema, se busca la manera de elevar privilegios hasta root para capturar la última bandera.</li>
-  </ul>
-  
-  <p>
-    Durante este reto se pondrán a prueba habilidades en herramientas como nmap, gobuster, john, hydra, y técnicas de análisis de WordPress.
-  </p>
+  <p>La máquina Code se centra en una aplicación web basada en Python que incluye un editor de código en línea. Esta configuración introduce desafíos relacionados con entornos de ejecución restringidos (sandboxes) y técnicas para evadir estas restricciones. Además, se exploran conceptos de escalada de privilegios mediante la explotación de configuraciones incorrectas del sistema.</p>
 
-  <h2 id="gobuster">🔎 Escaneo con Nmap</h2>
+  <h2 id="nmap">🔎 Escaneo con Nmap</h2>
   <pre># nmap -sC -sV -T5 10.10.11.62
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-05-19 19:32 AST
 Warning: 10.10.11.62 giving up on port because retransmission cap hit (2).
@@ -123,6 +110,7 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 <p>El primer paso fue realizar un escaneo con nmap -sC -sV -T5 para identificar servicios activos y versiones. La máquina respondió en el puerto 22 con un servicio OpenSSH 8.2p1, y en el puerto 5000 con un servidor Gunicorn 20.0.4, que sirve una aplicación web titulada Python Code Editor.</p>
 <p>Llamó la atención que varios puertos estaban en estado filtered, lo cual sugiere que podrían estar protegidos por un firewall o filtrados por reglas específicas del host. Esto limitó el reconocimiento, pero el servicio en el puerto 5000 se convirtió en el foco principal para continuar la enumeración y búsqueda de vectores de ataque.</p>
 
+<h2 id="web">🌐 Enumeración Web</h2>
 <pre># gobuster dir -u http://10.10.11.62:5000/ -w /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt 
 ===============================================================
 Gobuster v3.6
@@ -163,6 +151,7 @@ Starting gobuster in directory enumeration mode
 <ul><li>Se confirma que el entorno de ejecución tiene acceso directo al modelo de datos y puede interactuar con el ORM (probablemente SQLAlchemy).</li></ul>
 <ul><li>Las contraseñas no están en texto plano, pero los hashes pueden ser sometidos a ataques de fuerza bruta o cracking con herramientas como John the Ripper o Hashcat.</li></ul>
 
+<h2 id="wp">🔓 Cracking de hashes de contraseñas</h2>
 <pre># john --format=raw-md5 --wordlist=/usr/share/wordlists/rockyou.txt user.hash
 
 Using default input encoding: UTF-8
@@ -186,6 +175,7 @@ Session completed.
 martin      : nafeelswordsmaster
 </pre>
 
+<h2 id="hashes">👤 Acceso como usuario</h2>
 <pre># ssh martin@10.10.11.62
 The authenticity of host '10.10.11.62 (10.10.11.62)' can't be established.
 ED25519 key fingerprint is SHA256:AlQsgTPYThQYa3z9ZAHkFiO/LqXA6T55FoT58A1zlAY.
@@ -260,6 +250,7 @@ User martin may run the following commands on localhost:
 </pre>
 <p>Este archivo JSON especifica la configuración de un script o aplicación que probablemente genera backups comprimidos de ciertos directorios.</p>
 
+<h2 id="user">🌚 Obtencion de la bandera usuario</h2>
 <pre>martin@code:~/backups$ nano task.json 
 
 {
@@ -306,6 +297,7 @@ user.txt
 Al listar el directorio después de la extracción, aparece una nueva carpeta llamada home.</p>
 <p>Ingresamos a home y luego a la subcarpeta app-production, dentro de esta carpeta, encontramos el archivo user.txt.</p>
 
+<h2 id="privesc">👹 Escalada de privilegios</h2>
 <pre>martin@code:~$ nano task.json 
 martin@code:~$ cat task.json 
 {
