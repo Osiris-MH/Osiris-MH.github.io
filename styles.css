@@ -666,3 +666,10 @@ footer .footer-right {
   }
 
 }
+
+.htb-badge {
+  margin-left: 50px;
+  display: block;
+  width: 330px;
+  height: 84px;
+}
