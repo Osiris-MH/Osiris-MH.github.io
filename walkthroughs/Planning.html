@@ -203,6 +203,63 @@ Last login: Sun May 25 14:18:13 2025 from 10.10.14.217
 enzo@planning:~$ ls
 user.txt
 </pre>
+
+<pre>enzo@planning:~$ cat /opt/crontabs/crontab.db
+{"name":"Grafana backup","command":"/usr/bin/docker save root_grafana -o /var/backups/grafana.tar && /usr/bin/gzip /var/backups/grafana.tar && zip -P P4ssw0rdS0pRi0T3c /var/backups/grafana.tar.gz.zip /var/backups/grafana.tar.gz && rm /var/backups/grafana.tar.gz","schedule":"@daily","stopped":false,"timestamp":"Fri Feb 28 2025 20:36:23 GMT+0000 (Coordinated Universal Time)","logging":"false","mailing":{},"created":1740774983276,"saved":false,"_id":"GTI22PpoJNtRKg0W"}
+{"name":"Cleanup","command":"/root/scripts/cleanup.sh","schedule":"* * * * *","stopped":false,"timestamp":"Sat Mar 01 2025 17:15:09 GMT+0000 (Coordinated Universal Time)","logging":"false","mailing":{},"created":1740849309992,"saved":false,"_id":"gNIRXh1WIc9K7BYX"}
+enzo@planning:~$ 
+</pre>
+
+<pre>enzo@planning:~$ netstat -tupln
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 127.0.0.1:3000          0.0.0.0:*               LISTEN      -                   
+tcp        0      0 127.0.0.1:8000          0.0.0.0:*               LISTEN      -                   
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      -                   
+tcp        0      0 127.0.0.53:53           0.0.0.0:*               LISTEN      -                   
+tcp        0      0 127.0.0.1:44445         0.0.0.0:*               LISTEN      -                   
+tcp        0      0 127.0.0.1:33060         0.0.0.0:*               LISTEN      -                   
+tcp        0      0 127.0.0.1:3306          0.0.0.0:*               LISTEN      -                   
+tcp        0      0 127.0.0.54:53           0.0.0.0:*               LISTEN      -                   
+tcp6       0      0 :::22                   :::*                    LISTEN      -                   
+udp        0      0 127.0.0.54:53           0.0.0.0:*                           -                   
+udp        0      0 127.0.0.53:53           0.0.0.0:*                           -  
+</pre>
+
+<pre># ssh -L 8000:127.0.0.1:8000 enzo@planning.htb
+enzo@planning.htb's password: 
+Welcome to Ubuntu 24.04.2 LTS (GNU/Linux 6.8.0-59-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+ System information as of Sun May 25 02:26:58 PM UTC 2025
+
+  System load:  0.0               Processes:             251
+  Usage of /:   66.4% of 6.30GB   Users logged in:       1
+  Memory usage: 47%               IPv4 address for eth0: 10.10.11.68
+  Swap usage:   0%
+
+
+Expanded Security Maintenance for Applications is not enabled.
+
+0 updates can be applied immediately.
+
+1 additional security update can be applied with ESM Apps.
+Learn more about enabling ESM Apps service at https://ubuntu.com/esm
+
+
+The list of available updates is more than a week old.
+To check for new updates run: sudo apt update
+Failed to connect to https://changelogs.ubuntu.com/meta-release-lts. Check your Internet connection or proxy settings
+
+Last login: Sun May 25 14:26:59 2025 from 10.10.14.217
+enzo@planning:~$
+</pre>
+<pre>
+  <img src="IMG/Planin3.png">
+</pre>
   
 </body>
 </html>
