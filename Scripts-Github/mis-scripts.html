@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Osiris | Hacker Tools</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #0d0d0d;
+      --accent: #9b5de5;
+      --accent-light: #c77dff;
+      --accent-lighter: #21fe09;
+      --text: #e0e0e0;
+      --btn-green: #4caf50;
+      --card-bg: #1a1a1a;
+      --btn-info: #3f51b5;
+      --btn-link: #00bcd4;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Rajdhani', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 2rem;
+      text-align: center;
+      border-bottom: 1px solid var(--accent);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 3rem;
+      color: var(--accent);
+      letter-spacing: 2px;
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    header p {
+      font-size: 1rem;
+      margin-top: 0.5rem;
+      color: #bbb;
+      font-style: italic;
+    }
+
+    main {
+      padding: 3rem 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2.5rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid #292929;
+      border-radius: 16px;
+      padding: 2.5rem 1.5rem 1.5rem;
+      position: relative;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(155, 93, 229, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80px;
+      height: 80px;
+      background: url('https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png') no-repeat center/cover;
+      border-radius: 50%;
+      border: 3px solid var(--accent-light);
+      background-color: #fff;
+      box-shadow: 0 0 10px rgb(199, 125, 255, 0.4);
+    }
+
+    .card h2 {
+      margin-top: 50px;
+      color: var(--accent-light);
+      font-size: 1.5rem;
+    }
+
+    .card p {
+      font-size: 0.95rem;
+      color: #ccc;
+      margin: 1rem 0;
+    }
+
+    .status {
+      margin: 1rem 0;
+      font-weight: bold;
+    }
+
+    .status button {
+      border: none;
+      padding: 0.4rem 1rem;
+      font-size: 0.9rem;
+      border-radius: 20px;
+      cursor: default;
+    }
+
+    .public {
+      background-color: var(--btn-green);
+      color: white;
+    }
+
+    .card button.action {
+      margin-top: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: white;
+      transition: background 0.2s ease;
+      margin-bottom: 0.5rem;
+    }
+
+    .info-btn {
+      background-color: var(--btn-info);
+    }
+
+    .info-btn:hover {
+      background-color: #303f9f;
+    }
+
+    .link-btn {
+      background-color: var(--btn-link);
+    }
+
+    .link-btn:hover {
+      background-color: #0097a7;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.85rem;
+      color: #666;
+      border-top: 1px solid #111;
+      margin-top: auto;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(5px);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: #1e1e1e;
+      padding: 2rem;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 0 30px rgba(170, 0, 255, 0.8);
+      position: relative;
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+      color: var(--accent);
+    }
+
+    .modal-content p {
+      color: #ccc;
+      margin-bottom: 1rem;
+    }
+
+    .tech-tags span {
+      display: inline-block;
+      background: #333;
+      color: var(--accent-lighter);
+      padding: 0.3rem 0.6rem;
+      margin: 0.2rem;
+      border-radius: 5px;
+      font-size: 0.85rem;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      color: #aaa;
+      cursor: pointer;
+    }
+
+    .close-modal:hover {
+      color: white;
+    }
+
+  @media screen and (max-width: 480px) {
+
+  .modal-dialog {
+
+    max-width: 80% !important;
+
+    margin: 1.75rem auto !important;
+
+  }
+
+}
+
+/* Estilos generales para escritorio */
+
+.modal-dialog {
+
+  max-width: 600px;
+
+  margin: 1.75rem auto;
+
+}
+
+
+
+.modal-content {
+
+  padding: 1rem;
+
+  font-size: 1rem;
+
+}
+
+
+
+.modal-content h3 {
+
+  font-size: 1.2rem;
+
+}
+
+
+
+.modal-content p,
+
+.modal-content ul {
+
+  font-size: 0.90rem;
+
+}
+
+
+
+.tech-tags span {
+
+  font-size: 0.75rem;
+
+  padding: 0.3rem 0.4rem;
+
+}
+
+
+
+.close-modal {
+
+  font-size: 1.1rem;
+
+  top: 5px;
+
+  right: 10px;
+
+}
+
+
+
+/* Responsive para tablets */
+
+@media screen and (max-width: 768px) {
+
+  .modal-dialog {
+
+    max-width: 90%;
+
+    margin: 1.5rem auto;
+
+  }
+
+
+
+  .modal-content {
+
+    padding: 1.5rem;
+
+    font-size: 0.95rem;
+
+  }
+
+
+
+  .modal-content h3 {
+
+    font-size: 1.3rem;
+
+  }
+
+
+
+  .tech-tags span {
+
+    font-size: 0.8rem;
+
+    padding: 0.3rem 0.6rem;
+
+  }
+
+
+
+  .close-modal {
+
+    font-size: 1.3rem;
+
+  }
+
+}
+
+
+
+/* Responsive para móviles */
+
+@media screen and (max-width: 480px) {
+
+  .modal-dialog {
+
+    max-width: 80%;
+
+    margin: 1rem auto;
+
+  }
+
+
+
+  .modal-content {
+
+    padding: 1rem;
+
+    font-size: 0.85rem;
+
+  }
+
+
+
+  .modal-content h3 {
+
+    font-size: 1rem;
+
+  }
+
+
+
+  .tech-tags span {
+
+    font-size: 0.7rem;
+
+    padding: 0.2rem 0.4rem;
+
+  }
+
+
+
+  .close-modal {
+
+    font-size: 1.1rem;
+
+    top: 5px;
+
+    right: 10px;
+
+  }
+
+}
+
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Osiris Hacker Tools</h1>
+    <p>Scripts orientados a la auditoría, explotación y eficiencia operativa en entornos reales de evaluación y ataque. | GitHub Arsenal</p>
+  </header>
+
+  <main>
+    <!-- Tarjeta 1 -->
+    <div class="card">
+      <h2>OsiReverse-shell.php</h2>
+      <p>Script en PHP diseñado para establecer una reverse shell en entornos Linux.</p>
+      <button class="action info-btn" onclick="openModal('modal1')">Información del repositorio</button><br>
+      <button class="action link-btn" onclick="window.open('https://github.com/Osiris-MH/OsiReverse-shell.php', '_blank')">Enlace a GitHub</button>
+    </div>
+
+    <!-- Tarjeta 2 -->
+    <div class="card">
+      <h2>OsiReverse-shell-persistent.php</h2>
+      <p>Reverse shell avanzada en PHP, con tecnicas persistentes.</p> 
+      <button class="action info-btn" onclick="openModal('modal2')">Información del repositorio</button><br>
+      <button class="action link-btn" onclick="window.open('https://github.com/Osiris-MH/OsiReverse-shell-persistent.php', '_blank')">Enlace a GitHub</button>
+    </div>
+
+    <!-- Tarjeta 3 -->
+    <div class="card">
+      <h2>DirHound 🐕‍🦺</h2>
+      <p> Herramienta rápida de enumeración de directorios y archivos ocultos, con soporte multihilo y filtros avanzados.</p>
+      <div class="status">Proyecto: <button class="public">En desarrollo</button></div> 
+      <button class="action info-btn" onclick="openModal('modal3')">Información del repositorio</button><br>
+      <!--button class="action link-btn" onclick="window.open('', '_blank')">Enlace a GitHub</!--button-->
+    </div>
+
+  <!-- Modal 1 -->
+  <div class="modal" id="modal1">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal('modal1')">&times;</button>
+      <h3>OsiReverse-shell.php</h3>
+      <p><strong>Descripción:</strong> Una reverse shell escrita en PHP diseñada para ser utilizada en entornos de pruebas de penetración. Este script establece una conexión con un servidor remoto (IP y puerto configurables) y ejecuta un shell interactivo.</p>
+      <p><strong>Características Principales:</strong></p>
+        <ul><li><strong>Conexión Remota:</strong> Establece una conexión con un servidor remoto mediante PHP, proporcionando acceso al sistema comprometido a través de un shell interactivo.</li></ul>
+        <ul><li><strong>Auto-discovery del entorno:</strong> Detecta información del sistema como el usuario, UID, GID, versión de OS y la shell en uso.</li></ul>
+        <ul><li><strong>Uso de stream_select:</strong> Permite una comunicación eficiente y sin bloqueos entre el servidor remoto y el shell.</li></ul>
+      
+
+      <div class="tech-tags"><span>Linux/Bash</span><span>PHP</span><span>Networking</span><span>Reverse shell</span></div>
+    </div>
+  </div>
+
+  <!-- Modal 2 -->
+  <div class="modal" id="modal2">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal('modal2')">&times;</button>
+      <h3>OsiReverse-shell-persistent.php</h3>
+      <p><strong>Descripción:</strong>
+        Una reverse shell avanzada escrita en PHP diseñada para ser utilizada en entornos de pruebas de penetración. Este script establece una conexión con un servidor remoto (IP y puerto configurables) y ejecuta un shell interactivo. Además, incluye características de persistencia, lo que permite que el script se ejecute automáticamente tras un reinicio del sistema. Utiliza stream_select para manejar la comunicación, lo que lo hace eficiente y resistente a los bloqueos.</p>
+        <p><strong>Características Principales:</strong></p>
+        <ul><li><strong>Persistencia:</strong> Copia el script a /tmp/.ld.php y lo agrega a .bashrc para asegurar que se ejecute automáticamente tras cada reinicio.</li></ul>
+        <ul><li><strong>Auto-discovery del entorno:</strong> Detecta información del sistema como el usuario, UID, GID, versión de OS y la shell en uso.</li></ul>
+        <ul><li><strong>Uso de stream_select:</strong> Permite una comunicación eficiente y sin bloqueos entre el servidor remoto y el shell.</li></ul>
+        <ul><li><strong>Daemonización:</strong> Puede correr en segundo plano como un demonio, útil para operaciones encubiertas.</li></ul>
+        <ul><li><strong>Compatibilidad:</strong> Compatible con sistemas que ejecuten PHP y proporcionen un entorno adecuado.</li></ul>
+
+      <div class="tech-tags"><span>PHP</span><span>Persistencia</span><span>Reverse shell</span><span>Networking</span><span>Linux/Bash</span></div>
+    </div>
+  </div>
+
+  <!-- Modal 3 -->
+  <div class="modal" id="modal3">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal('modal3')">&times;</button>
+      <h3>DirHound 🐕‍🦺</h3>
+      <p><strong>Descripción:</strong> Es una herramienta de enumeración de directorios y archivos oculta diseñada para pruebas de penetración y auditorías de seguridad web. Construida para ser rápida, eficiente y flexible, DirHound permite descubrir recursos ocultos en servidores web utilizando ataques basados en diccionarios, soporte multihilo y opciones avanzadas de filtrado por códigos de respuesta.</p>
+      <p><strong>Características Principales:</strong></p>
+        <ul><li>🚀 Escaneo multihilo para una búsqueda rápida y eficiente.</li></ul>
+        <ul><li>🎯 Filtros avanzados por códigos HTTP (200, 301, 403, etc.).</li></ul>
+        <ul><li>📂 Soporte para wordlists personalizadas.</li></ul>
+        <ul><li>🛡️ Manejo robusto de errores y desconexiones.</li></ul>
+        <ul><li>🔥 Opcional: integración con proxies para anonimato.</li></ul>
+        <p>Ideal para pentesters, bug hunters y profesionales de ciberseguridad que buscan una solución ligera pero potente para la enumeración web.</p>
+
+      <div class="tech-tags"><span>Python</span><span>Enumeration</span><span>Networking</span><span>Web Enumeration</span><span>Multithreading</span></div>
+    </div>
+  </div>
+
+  <footer>
+
+  </footer>
+
+  <script>
+    function openModal(id) {
+      document.getElementById(id).style.display = "flex";
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = "none";
+    }
+
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape") {
+        document.querySelectorAll(".modal").forEach(modal => modal.style.display = "none");
+      }
+    });
+  </script>
+</body>
+</html>

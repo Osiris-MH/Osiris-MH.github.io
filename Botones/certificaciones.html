@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Certificaciones</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #000;
+      color: #fff;
+      overflow-x: hidden; /* permitir scroll vertical */
+      position: relative;
+    }
+
+    canvas#matrix {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      background: black;
+    }
+
+    .section {
+      max-width: 1100px;
+      margin: auto;
+      padding: 60px 30px;
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      font-size: 3rem;
+      text-align: center;
+      color: #ffff00;
+      text-shadow: 0 0 20px rgba(255, 255, 0, 0.7);
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 1.3rem;
+      color: #fff;
+      max-width: 800px;
+      margin: 0 auto 50px;
+    }
+
+    .cert-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 40px;
+      justify-items: center;
+    }
+
+    .cert-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .cert-card:hover {
+      transform: scale(1.02);
+    }
+
+    .cert-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 15px;
+      margin: 0;
+      padding: 0;
+      object-fit: contain;
+    }
+
+    .cert-caption {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      text-align: center;
+      padding: 10px;
+      font-size: 1rem;
+      color: #ffff00;
+      border-bottom-left-radius: 15px;
+      border-bottom-right-radius: 15px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 99;
+      padding-top: 60px;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      margin: auto;
+      display: block;
+      max-width: 90%;
+      max-height: 80vh;
+      animation: zoom 0.4s ease;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #ffff00;
+    }
+
+    @keyframes zoom {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .close {
+      position: absolute;
+      top: 30px;
+      right: 40px;
+      color: #fff;
+      font-size: 40px;
+      font-weight: bold;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: #ffff00;
+    }
+
+    /* Responsive ajustes básicos */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      .subtitle {
+        font-size: 1rem;
+      }
+
+      .cert-caption {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+
+<section class="section">
+  <h1>Mis Certificaciones</h1>
+  <p class="subtitle">
+    <i>
+      Cada una de estas certificaciones representa horas de estudio, esfuerzo y dedicación. Son el reflejo de mi compromiso con la excelencia profesional en ciberseguridad y tecnología.
+    </i>
+  </p>
+
+  <div class="cert-grid">
+    <div class="cert-card" onclick="openModal('imagenes/cert1.jpg')">
+      <img src="imagenes/cert1.jpg">
+    </div>
+    <div class="cert-card" onclick="openModal('imagenes/cert2.jpg')">
+      <img src="imagenes/cert2.jpg">
+    </div>
+    <div class="cert-card" onclick="openModal('imagenes/cert4.jpg')">
+      <img src="imagenes/cert4.jpg">
+    </div>
+    <div class="cert-card" onclick="openModal('imagenes/cert3.jpg')">
+      <img src="imagenes/cert3.jpg">
+    </div>
+    <div class="cert-card" onclick="openModal('imagenes/cert5.jpg')">
+      <img src="imagenes/cert5.jpg">
+    </div>
+    <div class="cert-card" onclick="openModal('imagenes/cert6.jpg')">
+      <img src="imagenes/cert6.jpg">
+    </div>
+  </div>
+</section>
+
+<!-- Modal -->
+<div id="modal" class="modal">
+  <span class="close" onclick="closeModal()">&times;</span>
+  <img class="modal-content" id="modal-img">
+</div>
+
+<script>
+  function openModal(src) {
+    const modal = document.getElementById("modal");
+    const modalImg = document.getElementById("modal-img");
+    modal.style.display = "block";
+    modalImg.src = src;
+  }
+
+  function closeModal() {
+    document.getElementById("modal").style.display = "none";
+  }
+
+  // MATRIX EFFECT
+  const canvas = document.getElementById('matrix');
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const letters = Array(256).join("1").split("");
+  const fontSize = 12;
+  const columns = canvas.width / fontSize;
+  const drops = Array.from({ length: columns }).fill(1);
+
+  function drawMatrix() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#cc00ff";
+    ctx.font = fontSize + "px monospace";
+
+    for (let i = 0; i < drops.length; i++) {
+      const text = String.fromCharCode(0x30A0 + Math.random() * 96);
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+
+      drops[i]++;
+    }
+  }
+
+  setInterval(drawMatrix, 33);
+</script>
+
+</body>
+</html>

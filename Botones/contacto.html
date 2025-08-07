@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contáctame</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top left, #111 0%, #000 100%);
+      color: #fff;
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      padding: 60px 30px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+      width: 90%;
+      max-width: 600px;
+      margin: 10vh auto;
+      text-align: center;
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      z-index: -1;
+      border-radius: 30px;
+      background: linear-gradient(45deg, #FFD700, #ff8c00, #FFD700);
+      background-size: 400% 400%;
+      animation: glowBorder 5s ease infinite;
+      filter: blur(30px);
+    }
+
+    @keyframes glowBorder {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 10px;
+      color: #FFD700;
+      text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+    }
+
+    p.subtitle {
+      font-size: 1.2rem;
+      color: #fff;
+      margin-bottom: 40px;
+    }
+
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      font-size: 1.1rem;
+      transition: transform 0.3s ease;
+    }
+
+    .contact-item:hover {
+      transform: scale(1.05);
+    }
+
+    .contact-item i {
+      font-size: 1.4rem;
+      color: #FFD700;
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+    }
+
+    a {
+      text-decoration: none;
+      color: #fff;
+      transition: color 0.3s ease;
+    }
+
+    a:hover {
+      color: #FFD700;
+    }
+
+    /* Lluvia de iconos */
+    .falling-icons {
+      position: absolute;
+      top: 0;
+      width: 80px; /* ancho reducido */
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .falling-icons.left {
+      left: 5%; /* más hacia el centro */
+    }
+
+    .falling-icons.right {
+      right: 5%;
+    }
+
+    .icon {
+      position: absolute;
+      font-size: 20px;
+      color: #FFD700;
+      opacity: 0.8;
+      text-shadow: 0 0 10px #FFD700;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-100px);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(110vh);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Lado izquierdo -->
+  <div class="falling-icons left" id="left-icons"></div>
+
+  <!-- Contenido principal -->
+  <div class="container">
+    <h1>Contáctame</h1>
+    <p class="subtitle"><i>¿Tienes alguna pregunta? Estoy a tus servicios.</i></p>
+
+    <div class="contact-info">
+      <div class="contact-item">
+        <i class="fas fa-phone"></i>
+        <span>+1 (809) 791-7142</span>
+      </div>
+      <div class="contact-item">
+        <i class="fas fa-envelope"></i>
+        <span>martinezosiris02@gmail.com</span>
+      </div>
+      <div class="contact-item">
+        <i class="fab fa-linkedin"></i>
+        <a href="https://www.linkedin.com/in/osiris-martinez-hernandez-9758a8249/" target="_blank">linkedin</a>
+      </div>
+      <div class="contact-item">
+        <i class="fab fa-github"></i>
+        <a href="https://github.com/Osiris-MH" target="_blank">Github</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lado derecho -->
+  <div class="falling-icons right" id="right-icons"></div>
+
+  <script>
+    const icons = ['<i class="fas fa-laptop-code"></i>', '<i class="fas fa-computer-mouse"></i>'];
+    const leftContainer = document.getElementById("left-icons");
+    const rightContainer = document.getElementById("right-icons");
+
+    function createFallingIcon(container) {
+      const icon = document.createElement("div");
+      icon.className = "icon";
+      icon.innerHTML = icons[Math.floor(Math.random() * icons.length)];
+      icon.style.left = Math.random() * 100 + "%";
+      icon.style.animationDuration = (4 + Math.random() * 4) + "s";
+      icon.style.fontSize = (16 + Math.random() * 12) + "px";
+      container.appendChild(icon);
+
+      setTimeout(() => {
+        icon.remove();
+      }, 10000);
+    }
+
+    setInterval(() => {
+      createFallingIcon(leftContainer);
+      createFallingIcon(rightContainer);
+    }, 300);
+  </script>
+  <script>
+    document.addEventListener("mousemove", (e) => {
+      const sparkle = document.createElement("div");
+      sparkle.className = "sparkle";
+      sparkle.style.left = e.clientX + "px";
+      sparkle.style.top = e.clientY + "px";
+      document.body.appendChild(sparkle);
+  
+      setTimeout(() => {
+        sparkle.remove();
+      }, 1000); // Duración antes de que desaparezca
+    });
+  </script>
+  
+  <style>
+    .sparkle {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      background: radial-gradient(circle, #FFD700, transparent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      animation: sparkleAnim 1s linear forwards;
+    }
+  
+    @keyframes sparkleAnim {
+      0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-10px, -30px) scale(0.5);
+        opacity: 0;
+      }
+    }
+  </style>
+  
+</body>
+</html>
