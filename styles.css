@@ -583,14 +583,6 @@ footer .footer-right {
 
 
 
-  .tryhackme-iframe {
-
-    height: 100px;
-
-  }
-
-
-
   footer {
 
     flex-direction: column;
@@ -665,11 +657,4 @@ footer .footer-right {
 
   }
 
-}
-
-.htb-badge {
-  margin-left: 50px;
-  display: block;
-  width: 330px;
-  height: 84px;
 }
