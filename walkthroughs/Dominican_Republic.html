@@ -79,16 +79,7 @@
 
   <h2 id="info">🔍 Información de la máquina</h2>
   <p>
-    La máquina <strong>Mr. Robot</strong> de TryHackMe está basada en la popular serie de televisión y simula un entorno realista con un sistema vulnerable al estilo CTF. El reto está clasificado como de dificultad media y está enfocado en tres fases principales:
-  </p>
-  <ul>
-    <li>🔍 <strong>Exploración:</strong> Descubrimiento de servicios, puertos abiertos y análisis del sitio web principal.</li>
-    <li>🕵️‍♂️ <strong>Enumeración:</strong> Inspección a fondo del servidor web, uso de wordlists para encontrar archivos ocultos y recolección de credenciales.</li>
-    <li>🚀 <strong>Escalada de privilegios:</strong> Tras obtener acceso inicial al sistema, se busca la manera de elevar privilegios hasta root para capturar la última bandera.</li>
-  </ul>
-  
-  <p>
-    Durante este reto se pondrán a prueba habilidades en herramientas como nmap, gobuster, john, hydra, y técnicas de análisis de WordPress.
+    Un homenaje a la historia dominicana narrada a través de sombras digitales. Esta experiencia invita a los jugadores a explorar lo oculto, lo sugerido pero nunca mencionado. Cada rincón del sistema alberga una intención; cada ausencia tiene peso.
   </p>
 
   <h2 id="gobuster">🔎 Escaneo con Nmap</h2>
@@ -109,12 +100,13 @@ PORT   STATE SERVICE VERSION
 |_http-server-header: Apache/2.4.41 (Ubuntu)
 MAC Address: 08:00:27:A1:BE:6C (PCS Systemtechnik/Oracle VirtualBox virtual NIC)
 Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel</pre>
-  <p>El escaneo anterior encontró 3 puertos en la caja, pero solo 2 estaban abiertos, mientras que el Puerto 22 (SSH) está cerrado.</p>
+  <p>El escaneo Nmap revela SSH en el puerto 22 y Apache en el 80. Ambos servicios corren sobre Ubuntu, lo que puede ser útil para identificar vectores de acceso o escalada más adelante.</p>
   <h2 id="gobuster">🌐 Enumeración Web</h2>
 
   <pre>
     <img src="IMG/RD2.png">
   </pre>
+  <p>Al acceder al puerto 80, se carga la página por defecto de Apache en Ubuntu. Esto confirma que el servidor HTTP está activo, pero aún no ha sido personalizado. No hay contenido útil a simple vista, lo que sugiere que debemos buscar rutas ocultas o archivos fuera del índice principal.</p>
 
   <pre># gobuster dir -u 192.168.1.8 -w /usr/share/wordlists/dirb/common.txt
 ===============================================================
@@ -150,30 +142,42 @@ Starting gobuster in directory enumeration mode
 Progress: 4614 / 4615 (99.98%)
   
 </pre>
+<p>Gobuster revela múltiples directorios interesantes como /private/, /dev/, y /staging/, todos accesibles con redirección 301. También aparecen archivos sensibles como .htaccess y .htpasswd, aunque protegidos (403). Hay material para explorar más allá del índice visible.
+</p>
 
 <pre>
   <img src="IMG/RD4.png">
 </pre>
+<p>Al acceder al directorio /images/, se muestra un listado de archivos con nombres cargados de historia: Duarte.jpg, Mella.jpg, Sanchez.jpg, y Altar_de_la_patria.jpeg. Esto sugiere que las pistas podrían estar ocultas en las imágenes.
+</p>
 
 <pre>
   <img src="IMG/RD5.png">
 </pre>
+<p> El directorio /staging/ expone varios archivos .txt y dos subdirectorios: 1844/ y zone7/. La presencia de múltiples archivos sugiere que este espacio se usa para pruebas o desarrollo. El nombre 1844 podría tener carga histórica, así que vale la pena inspeccionarlo primero. Este hallazgo abre la puerta a posibles pistas narrativas o credenciales ocultas.
+</p>
 
 <pre>
   <img src="IMG/RD6.png">
 </pre>
+<p>Dentro de /staging/1844/secrets.txt encontramos una secuencia en hexadecimal. 
+</p>
 
 <pre>
   <img src="IMG/RD7.png">
 </pre>
+<p>Al decodificarla con CyberChef, obtenemos el mensaje: “Will you be able to find the secret file?” Esto confirma que estamos en una fase de pistas encadenadas. El reto ahora es identificar qué archivo o ruta oculta contiene la siguiente clave</p>
 
 <pre> 
   <img src="IMG/RD8.png">
 </pre>
+<p>En /staging/file.txt encontramos una cadena larga que parece un hash o un relleno intencional.
+</p>
 
 <pre>
   <img src="IMG/RD9.png">
 </pre>
+<p>El archivo contiene una cadena codificada en Base64. Al decodificarla con CyberChef, obtenemos el mensaje: “Not everything can be seen with Binwalk and ExifTool.” Esto sugiere que las herramientas tradicionales de análisis de archivos pueden no revelar todas las pistas. Es una advertencia narrativa: el reto exige pensar más allá de lo obvio.</p>
 
 <pre>
   <img src="IMG/RD10.png">
