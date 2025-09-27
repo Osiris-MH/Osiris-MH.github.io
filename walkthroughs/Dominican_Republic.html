@@ -68,11 +68,8 @@
       <li><a href="#info">🔍 Información de la máquina</a></li>
       <li><a href="#nmap">🔎 Escaneo con Nmap</a></li>
       <li><a href="#web">🌐 Enumeración Web</a></li>
-      <li><a href="#wp">🔧 Explotación WordPress</a></li>
-      <li><a href="#bruteforce">🧰 Ataques de fuerza bruta</a></li>
-      <li><a href="#shell">💻 Reverse Shell en PHP</a></li>
+      <li><a href="#wp">🔧 SQLMap</a></li>
       <li><a href="#hashes">👤 Acceso como usuario</a></li>
-      <li><a href="#user">🔐 Cracking de credenciales</a></li>
       <li><a href="#privesc">🚀 Escalada de privilegios</a></li>
     </ul>
   </div>
@@ -283,7 +280,7 @@ Como resultado, el sistema redirige al usuario al endpoint /welcome.php, donde s
 Bienvenido, alice
 Has accedido correctamente.
 </p>
-
+<h2 id="wp">🔧 SQLMap</h2>
 <pre>
   <img src="IMG/RD25.png">
 </pre>
@@ -344,6 +341,7 @@ El escaneo confirma que el backend utiliza MySQL 8.0.22, corriendo sobre Linux U
 <p>Este paso demuestra acceso total a datos sensibles. El campo password está en texto plano, lo que confirma que no se aplicó hashing ni cifrado, representando una falla crítica de seguridad. El usuario sanchez con la contraseña YoSoyLaBandera podría tener privilegios elevados, dada la naturaleza del identificador.
 </p>
 
+<h2 id="hashes">👤 Acceso como usuario</h2>
 <pre>
   <img src="IMG/RD33.png">
 </pre>
@@ -400,7 +398,7 @@ duarte:DiosPatriaLibertad1844
 duarte@Dominican-Republic-thm
 Se ejecuta ls -la para listar los archivos del directorio personal, revelando elementos típicos del entorno (.bash_history, .cache, backup, etc.) y la 2da flag, flag_sanchez.txt
 </p>
-
+<h2 id="privesc">🚀 Escalada de privilegios</h2>
 <pre>
   <img src="IMG/RD41.png">
 </pre>
