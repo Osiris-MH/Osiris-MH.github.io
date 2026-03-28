@@ -464,6 +464,18 @@ footer .footer-right {
   );
 }
 
+.eliot {
+  background-image: url('img/eliot.webp');
+}
+.eliot::before {
+  background: linear-gradient(
+    120deg,
+    rgba(0, 140, 255, 0.5) 0%,
+    rgba(255, 0, 0, 0.5) 50%,
+    rgb(255, 252, 252) 100%
+  );
+}
+
 .tech-btn {
   background-color: #007BFF; /* Azul primario */
   color: white;
