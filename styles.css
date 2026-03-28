@@ -427,6 +427,39 @@ footer .footer-right {
     rgba(6, 181, 163, 0.542) 100%
   );
 }
+.tryhackme {
+  background-image: url('img/tryhackme.webp');
+}
+.tryhackme::before {
+  background: linear-gradient(
+    120deg,
+    rgba(0, 140, 255, 0.5) 0%,
+    rgba(255, 0, 0, 0.5) 50%,
+    rgb(255, 252, 252) 100%
+  );
+}
+.MDA {
+  background-image: url('img/MDA.webp');
+}
+.MDA::before {
+  background: linear-gradient(
+    120deg,
+    rgba(224, 239, 3, 0.827) 0%,
+    rgba(234, 0, 255, 0.76) 50%,
+    rgb(255, 252, 252) 100%
+  );
+}
+.redteamrd_logo {
+  background-image: url('img/redteamrd_logo.webp');
+}
+.redteamrd_logo::before {
+  background: linear-gradient(
+    120deg,
+    rgba(0, 140, 255, 0.5) 0%,
+    rgba(255, 0, 0, 0.5) 50%,
+    rgb(255, 252, 252) 100%
+  );
+}
 
 .tech-btn {
   background-color: #007BFF; /* Azul primario */
