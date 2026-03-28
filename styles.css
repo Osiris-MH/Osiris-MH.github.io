@@ -398,6 +398,18 @@ footer .footer-right {
 .RD::before {
   background: linear-gradient(
     120deg,
+    rgba(0, 140, 255, 0.5) 0%,
+    rgba(255, 0, 0, 0.5) 50%,
+    rgb(255, 252, 252) 100%
+  );
+}
+
+.logo_C {
+  background-image: url('img/logo_C.webp');
+}
+.logo_C::before {
+  background: linear-gradient(
+    120deg,
     rgba(0, 140, 255, 0.1) 0%,
     rgba(0, 140, 255, 0.5) 50%,
     rgba(0, 140, 255, 0.1) 100%
