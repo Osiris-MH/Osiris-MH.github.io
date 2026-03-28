@@ -476,6 +476,18 @@ footer .footer-right {
   );
 }
 
+.XP {
+  background-image: url('img/XP.webp');
+}
+.XP::before {
+  background: linear-gradient(
+    120deg,
+    rgba(128, 0, 255, 0.1) 0%,
+    rgba(128, 0, 255, 0.5) 50%,
+    rgba(128, 0, 255, 0.1) 100%
+  );
+}
+
 .tech-btn {
   background-color: #007BFF; /* Azul primario */
   color: white;
