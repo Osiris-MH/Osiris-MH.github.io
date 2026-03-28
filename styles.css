@@ -381,7 +381,7 @@ footer .footer-right {
 
 /* Botón 8 - C++ (azul) */
 .C {
-  background-image: url('img/C++.jpg');
+  background-image: url('img/cpp.webp');
 }
 .C::before {
   background: linear-gradient(
@@ -413,6 +413,18 @@ footer .footer-right {
     rgba(0, 140, 255, 0.1) 0%,
     rgba(0, 140, 255, 0.5) 50%,
     rgba(0, 140, 255, 0.1) 100%
+  );
+}
+
+.hack-the-box {
+  background-image: url('img/hack-the-box.webp');
+}
+.hack-the-box::before {
+  background: linear-gradient(
+    120deg,
+    rgba(0, 190, 123, 0.649) 0%,
+    rgba(0, 255, 8, 0.96) 50%,
+    rgba(6, 181, 163, 0.542) 100%
   );
 }
 
