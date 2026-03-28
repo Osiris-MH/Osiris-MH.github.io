@@ -380,10 +380,10 @@ footer .footer-right {
 }
 
 /* Botón 8 - C++ (azul) */
-.kali {
+.C {
   background-image: url('img/C++.jpg');
 }
-.kali::before {
+.C::before {
   background: linear-gradient(
     120deg,
     rgba(0, 140, 255, 0.1) 0%,
