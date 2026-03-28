@@ -430,6 +430,7 @@ footer .footer-right {
 .tryhackme {
   background-image: url('img/tryhackme.webp');
 }
+
 .tryhackme::before {
   background: linear-gradient(
     120deg,
@@ -438,6 +439,7 @@ footer .footer-right {
     rgb(255, 252, 252) 100%
   );
 }
+
 .MDA {
   background-image: url('img/MDA.png');
 }
@@ -449,6 +451,7 @@ footer .footer-right {
     rgb(255, 252, 252) 100%
   );
 }
+
 .redteamrd_logo {
   background-image: url('img/redteamrd_logo.jpg');
 }
