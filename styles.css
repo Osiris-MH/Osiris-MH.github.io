@@ -439,7 +439,7 @@ footer .footer-right {
   );
 }
 .MDA {
-  background-image: url('img/MDA.webp');
+  background-image: url('img/MDA.png');
 }
 .MDA::before {
   background: linear-gradient(
@@ -450,7 +450,7 @@ footer .footer-right {
   );
 }
 .redteamrd_logo {
-  background-image: url('img/redteamrd_logo.webp');
+  background-image: url('img/redteamrd_logo.jpg');
 }
 .redteamrd_logo::before {
   background: linear-gradient(
