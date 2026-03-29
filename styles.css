@@ -194,41 +194,124 @@ footer .footer-right {
   transform: scale(1.05);
 }
 
-/* Botones */
-.center-button-container {
-  display: flex;
-  justify-content: center;
-  gap: 20px; /* Espacio entre los botones */
-  margin-top: 30px;
-}
-
-.glow-red-button {
-  background-color: #330000;
-  color: white;
-  font-size: 1.2rem;
-  padding: 15px;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.4s ease;
-  box-shadow: 0 0 10px #440000;
+/* Contenedor principal de paginación */
+.pagination-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 60px;
-  height: 60px;
-  text-align: center;
+  gap: 15px;
+  margin: 40px 0;
+  flex-wrap: wrap;
 }
 
-.glow-red-button i {
-  margin-right: 0;
-  font-size: 1.5rem;
+/* Botones Previous y Next */
+.pagination-btn {
+  background-color: #1e1e1e;
+  color: #00bfff;
+  border: 1px solid #00bfff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.glow-red-button:hover {
-  background-color: #550000;
-  box-shadow: 0 0 30px 10px red;
+.pagination-btn:hover {
+  background-color: #00bfff;
+  color: #121212;
+  box-shadow: 0 0 15px rgba(0, 191, 255, 0.5);
   transform: scale(1.05);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.pagination-btn:disabled:hover {
+  background-color: #1e1e1e;
+  color: #00bfff;
+  box-shadow: none;
+}
+
+/* Contenedor de los números de página */
+.pagination-numbers {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Cada botón de número de página */
+.page-number {
+  background-color: #1e1e1e;
+  color: #fff;
+  border: 1px solid #333;
+  min-width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-number:hover {
+  border-color: #00bfff;
+  color: #00bfff;
+  transform: scale(1.05);
+}
+
+/* Página activa (la que estás viendo) */
+.page-number.active {
+  background-color: #00bfff;
+  color: #121212;
+  border-color: #00bfff;
+  box-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
+}
+
+/* Elipsis (...) */
+.page-ellipsis {
+  color: #888;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  font-weight: bold;
+}
+
+/* Responsive para móvil */
+@media (max-width: 768px) {
+  .pagination-container {
+    gap: 10px;
+  }
+  
+  .pagination-btn {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .page-number {
+    min-width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+  
+  .page-ellipsis {
+    min-width: 32px;
+    height: 32px;
+  }
 }
 
 .footer-icons {
